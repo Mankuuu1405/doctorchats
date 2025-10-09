@@ -1,0 +1,34 @@
+node_modules
+
+*.env
+
+# Build outputs
+**/dist/
+**/build/
+.vercel/
+.vercel_build_output/
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local env files
+.env.local
+.env.*.local
+backend/.env
+admin/.env
+frontend/.env
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Uploads (keep folder, ignore contents)
+backend/uploads/*
+!backend/uploads/.gitkeep 
