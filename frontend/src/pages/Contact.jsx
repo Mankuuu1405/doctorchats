@@ -82,15 +82,15 @@ const Contact = () => {
               <ul className="space-y-4 text-gray-600">
                 <li className="flex items-start gap-4">
                   <LocationIcon />
-                  <span>54709 Willms Station, Suite 350, Washington, USA</span>
+                  <span>.Ultimate Electronics... 10-3-6/5/A Beside Max Showroom MehdTelangana Hyderabad 500028 Telangana</span>
                 </li>
                 <li className="flex items-start gap-4">
                   <PhoneIcon />
-                  <span>Tel: (415) 555-0132</span>
+                  <span>Tel: +91-8885783867 </span>
                 </li>
                 <li className="flex items-start gap-4">
                   <EmailIcon />
-                  <span>Email: support@healthlife.com</span>
+                  <span>Email: support@cywala.com</span>
                 </li>
               </ul>
             </div>
