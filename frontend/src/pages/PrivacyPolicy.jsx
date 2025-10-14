@@ -144,7 +144,7 @@ const PrivacyPolicy = () => {
             <strong>Cywala Inc.</strong><br/>
             .ULTIMATE ELECTRONICS. 10-3-6/5/A Beside Max Showroom MehdTelangana<br/>
             Hyderabad 500028 Telangana<br/>
-            <a href="mailto:info@healthlife.com" className='text-teal-600 hover:underline'>info@healthlife.com</a>
+            <a href="mailto:info@cywala.com" className='text-teal-600 hover:underline'>info@cywala.com</a>
         </p>
       </div>
     </div>
