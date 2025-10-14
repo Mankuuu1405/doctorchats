@@ -141,10 +141,10 @@ const PrivacyPolicy = () => {
           If you have questions or comments about this Privacy Policy, please contact us at:
         </p>
         <p className='text-gray-700 leading-relaxed mt-4'>
-            <strong>HealthLife Inc.</strong><br/>
-            [Your Company Address]<br/>
-            [City, State, Zip Code]<br/>
-            <a href="mailto:privacy@healthlife.com" className='text-teal-600 hover:underline'>privacy@healthlife.com</a>
+            <strong>Cywala Inc.</strong><br/>
+            .ULTIMATE ELECTRONICS. 10-3-6/5/A Beside Max Showroom MehdTelangana<br/>
+            Hyderabad 500028 Telangana<br/>
+            <a href="mailto:info@healthlife.com" className='text-teal-600 hover:underline'>info@healthlife.com</a>
         </p>
       </div>
     </div>
