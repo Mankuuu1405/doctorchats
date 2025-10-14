@@ -62,8 +62,9 @@ const Footer = () => {
           <div>
             <p className='text-lg font-semibold text-gray-800 mb-4'>Get in Touch</p>
             <ul className='flex flex-col gap-3'>
-              <li>+1-212-456-7890</li>
-              <li>contact@healthlife.com</li>
+              <li></li>
+              <li>support@cywala.com</li>
+              <li>info@cywala.com</li>
             </ul>
           </div>
           
@@ -84,7 +85,7 @@ const Footer = () => {
       <div className='border-t border-gray-200'>
         <div className='container mx-auto px-6 py-4'>
           <p className='text-sm text-center text-gray-500'>
-            Copyright © {new Date().getFullYear()} HealthLife.com - All Rights Reserved.
+            Copyright © {new Date().getFullYear()} cywala.com - All Rights Reserved.
           </p>
         </div>
       </div>
