@@ -90,7 +90,7 @@ const Contact = () => {
                 </li>
                 <li className="flex items-start gap-4">
                   <EmailIcon />
-                  <span>Email: contact@healthlife.com</span>
+                  <span>Email: support@healthlife.com</span>
                 </li>
               </ul>
             </div>
