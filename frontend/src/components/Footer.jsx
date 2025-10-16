@@ -74,7 +74,7 @@ const Footer = () => {
             <div className='flex gap-4'>
                 <a href="#" className='text-gray-500 hover:text-teal-600 transition-colors duration-300'><FacebookIcon /></a>
                 <a href="#" className='text-gray-500 hover:text-teal-600 transition-colors duration-300'><TwitterIcon /></a>
-                <a href="#" className='text-gray-500 hover:text-teal-600 transition-colors duration-300'><InstagramIcon /></a>
+                <a href="https://www.instagram.com/cywala_/?igsh=MXIzZmU4Z256OThiOA%3D%3D#" className='text-gray-500 hover:text-teal-600 transition-colors duration-300'><InstagramIcon /></a>
             </div>
           </div>
 
