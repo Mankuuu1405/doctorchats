@@ -20,9 +20,9 @@ const Navbar = () => {
     { path: '/about', label: 'ABOUT' },
     { path: '/contact', label: 'CONTACT' },
     {
-      path: '/doctor/login',
+      path: 'https://www.cywala.com/admin',
       label: 'DOCTORS LOGIN',
-      isExternal: false, // Flag for external links
+      isExternal: true, // Flag for external links
     },
      {
       path: '/login',
