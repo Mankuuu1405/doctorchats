@@ -17,7 +17,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import MyConsultations from './pages/MyConsultations';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
-import DoctorSignup from './admin/src/pages/Doctor/DoctorSignup';
+
 
 
 const App = () => {
@@ -64,7 +64,7 @@ const App = () => {
             <Route path='/my-profile' element={<MyProfile />} />
             <Route path='/chat/:chatId' element={<ChatPage />} />
             <Route path='/my-consultations' element={<MyConsultations />} />
-            <Route path='/doctor/login' element={<DoctorSignup />} />
+  
 
           </Route>
         </Routes>
