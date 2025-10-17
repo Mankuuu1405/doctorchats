@@ -6,7 +6,11 @@ export const AppContext = createContext();
 
 const AppContextProvider = ({ children }) => {
     const currencySymbol = '₹';
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    // Use same-origin API in production to avoid CORS across www/non-www.
+    // In development, respect VITE_BACKEND_URL for local backend.
+    const backendUrl = import.meta.env.DEV
+        ? (import.meta.env.VITE_BACKEND_URL || '')
+        : (typeof window !== 'undefined' ? window.location.origin : '');
 
     const [doctors, setDoctors] = useState([]);
     const [token, setToken] = useState(localStorage.getItem('token') || '');

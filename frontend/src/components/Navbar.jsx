@@ -14,17 +14,14 @@ const Navbar = () => {
   };
 
   // --- NEW: Defined navigation links for easier management ---
+  const currentOrigin = typeof window !== 'undefined' ? window.location.origin : '';
   const navLinks = [
     { path: '/', label: 'HOME' },
     { path: '/doctors', label: 'DOCTORS' },
     { path: '/about', label: 'ABOUT' },
     { path: '/contact', label: 'CONTACT' },
     {
-<<<<<<< HEAD
-      path: 'https://www.cywala.com/admin',
-=======
-      path: 'https://www.cywala.com/admin/login',
->>>>>>> 99d068b (new changes)
+      path: `${currentOrigin.replace(/\/$/, '')}/admin`,
       label: 'DOCTORS LOGIN',
       isExternal: true, // Flag for external links
     },

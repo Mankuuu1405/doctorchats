@@ -6,7 +6,10 @@ const AppContextProvider = (props) => {
 
     // Global variables that are used across the Admin/Doctor portals.
     const currency = import.meta.env.VITE_CURRENCY || '₹'; // Provide a fallback
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    // Same-origin API in production; env override in development.
+    const backendUrl = import.meta.env.DEV
+        ? (import.meta.env.VITE_BACKEND_URL || '')
+        : (typeof window !== 'undefined' ? window.location.origin : '');
 
     // A reusable function to calculate age from a date of birth string.
     const calculateAge = (dob) => {

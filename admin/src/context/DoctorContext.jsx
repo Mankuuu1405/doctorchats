@@ -5,7 +5,10 @@ import { toast } from 'react-toastify';
 export const DoctorContext = createContext();
 
 const DoctorContextProvider = (props) => {
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    // Same-origin API in production; env override in development.
+    const backendUrl = import.meta.env.DEV
+        ? (import.meta.env.VITE_BACKEND_URL || '')
+        : (typeof window !== 'undefined' ? window.location.origin : '');
     const [dToken, setDToken] = useState(localStorage.getItem('dToken') || '');
     const [consultations, setConsultations] = useState([]);
     const [dashData, setDashData] = useState(null);
