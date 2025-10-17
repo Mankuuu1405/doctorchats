@@ -3,9 +3,10 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { DoctorContext } from '../context/DoctorContext';
 import { AdminContext } from '../context/AdminContext';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 
 const Login = () => {
+    const location = useLocation();
     const [state, setState] = useState('Doctor');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -16,6 +17,15 @@ const Login = () => {
 
     const { handleDoctorLogin } = useContext(DoctorContext);
     const { handleAdminLogin } = useContext(AdminContext);
+
+    // Ensure the correct tab is selected when accessing /admin/login or /doctor/login directly
+    React.useEffect(() => {
+        if (location.pathname.startsWith('/admin')) {
+            setState('Admin');
+        } else if (location.pathname.startsWith('/doctor')) {
+            setState('Doctor');
+        }
+    }, [location.pathname]);
 
     const onSubmitHandler = async (event) => {
         event.preventDefault();

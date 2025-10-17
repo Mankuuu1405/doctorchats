@@ -30,11 +30,11 @@ const requestDoctorRegistrationOTP = async (req, res) => {
             { upsert: true, new: true }
         );
 
-        const message = `<p>Your One-Time Password (OTP) for HealthLife registration is:</p><h2><b>${otp}</b></h2><p>This OTP is valid for 10 minutes.</p>`;
+        const message = `<p>Your One-Time Password (OTP) for Cywala registration is:</p><h2><b>${otp}</b></h2><p>This OTP is valid for 10 minutes.</p>`;
         
         await sendEmail({
             email: email,
-            subject: 'HealthLife - Verify Your Email',
+            subject: 'Cywala - Verify Your Email',
             message
         });
 

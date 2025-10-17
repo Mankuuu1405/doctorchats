@@ -29,12 +29,12 @@ const App = () => {
 
     // This component protects routes that require an admin to be logged in.
     const AdminProtectedRoute = ({ children }) => {
-        return aToken ? children : <Navigate to="/" />;
+        return aToken ? children : <Navigate to="/admin/login" />;
     };
 
     // This component protects routes that require a doctor to be logged in.
     const DoctorProtectedRoute = ({ children }) => {
-        return dToken ? children : <Navigate to="/" />;
+        return dToken ? children : <Navigate to="/doctor/login" />;
     };
 
     return (
@@ -44,6 +44,8 @@ const App = () => {
             <Routes>
                 {/* Login Page: If not logged in, show Login. If logged in, redirect to the correct dashboard. */}
                 <Route path="/" element={!aToken && !dToken ? <Login /> : (aToken ? <Navigate to="/admin/dashboard" /> : <Navigate to="/doctor/dashboard" />)} />
+                <Route path="/admin/login" element={!aToken ? <Login /> : <Navigate to="/admin/dashboard" />} />
+                <Route path="/doctor/login" element={!dToken ? <Login /> : <Navigate to="/doctor/dashboard" />} />
                 <Route path="/doctor/signup" element={<DoctorSignup />} /> 
 
                 {/* --- Admin Portal Routes --- */}

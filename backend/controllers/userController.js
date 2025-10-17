@@ -228,8 +228,8 @@ const requestUserRegistrationOTP = async (req, res) => {
         );
 
         // Send OTP to user's email
-        const message = `<p>Your OTP for HealthLife registration is: <h2><b>${otp}</b></h2> This is valid for 10 minutes.</p>`;
-        await sendEmail({ email, subject: 'HealthLife - Email Verification', message });
+        const message = `<p>Your OTP for Cywala registration is: <h2><b>${otp}</b></h2> This is valid for 10 minutes.</p>`;
+        await sendEmail({ email, subject: 'Cywala - Email Verification', message });
 
         res.json({ success: true, message: "OTP sent to your email. Please verify." });
 

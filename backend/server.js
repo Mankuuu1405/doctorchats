@@ -16,7 +16,16 @@ connectCloudinary()
 
 // middlewares
 app.use(express.json())
-app.use(cors())
+const allowedOrigins = [
+  "https://cywala.com",
+  "https://www.cywala.com"
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 
 // api endpoints
 app.use("/api/user", userRouter)
