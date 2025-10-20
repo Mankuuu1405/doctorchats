@@ -32,6 +32,26 @@ const AdminContextProvider = (props) => {
         } catch (error) { toast.error("Failed to load doctors."); }
     };
 
+
+    // --- NEW: getAllUsers function ---
+    const getAllUsers = async () => {
+        if (!aToken) return;
+        try {
+            const { data } = await axios.get(`${backendUrl}/api/admin/all-Users`, { // Assumes this endpoint
+                headers: { Authorization: `Bearer ${aToken}` }
+            });
+            if (data.success) {
+                setUsers(data.users); // Assuming your API returns { success: true, users: [...] }
+            } else {
+                toast.error("Failed to load users.");
+            }
+        } catch (error) {
+            console.error("Error fetching users:", error);
+            toast.error("Failed to load users.");
+        }
+    };
+
+
     const changeAvailability = async (docId) => {
         if (!aToken) return;
         try {

@@ -8,15 +8,15 @@ const DoctorsList = () => {
     const { doctors, changeAvailability, aToken, getAllDoctors } = useContext(AdminContext);
 
     // This effect is responsible for fetching the initial list of doctors.
-    useEffect(() => {
-        // We only fetch if the admin is logged in (i.e., aToken exists).
-        if (aToken) {
-            getAllDoctors();
-        }
-        // --- FIX: Add getAllDoctors to the dependency array ---
-        // This tells React to re-run the effect if this function ever changes,
-        // which follows best practices and prevents potential bugs.
-    }, [aToken, getAllDoctors]);
+    // useEffect(() => {
+    //     // We only fetch if the admin is logged in (i.e., aToken exists).
+    //     if (aToken) {
+    //         getAllDoctors();
+    //     }
+    //     // --- FIX: Add getAllDoctors to the dependency array ---
+    //     // This tells React to re-run the effect if this function ever changes,
+    //     // which follows best practices and prevents potential bugs.
+    // }, [aToken, getAllDoctors]);
 
     if (!doctors || doctors.length === 0) {
         return <div className="p-10 text-center text-gray-500">No doctors found.</div>;

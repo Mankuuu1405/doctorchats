@@ -8,6 +8,7 @@ import cloudinary from '../config/cloudinary.js';
 
 // === API for admin login ===
 const loginAdmin = async (req, res) => {
+    console.log("Reached here")
     try {
         const { email, password } = req.body;
         if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
@@ -111,7 +112,7 @@ const getDoctorProfileForAdmin = async (req, res) => {
 };
 
 const updateDoctorProfileByAdmin = async (req, res) => {
-    try {
+        try {
         const { id } = req.params; // Doctor ID from URL
         const { name, speciality, degree, experience, fees, about, available } = req.body;
 

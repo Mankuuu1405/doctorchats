@@ -36,6 +36,9 @@ adminRouter.get("/all-doctors", allDoctors);
 adminRouter.get("/doctor/:id", getDoctorProfileForAdmin);
 adminRouter.patch("/doctor/:id", upload.single('image'), updateDoctorProfileByAdmin); // This is the new route
 adminRouter.post("/change-availability", changeAvailablity); // Admin can change doctor availability
+adminRouter.get("/all-Users",()=>{
+  console.log("Here reached")
+} );
 
 // --- Consultation / Chat Management ---
 // This is the new route to get a list of all paid chat sessions.

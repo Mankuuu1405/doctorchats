@@ -34,7 +34,7 @@ const Login = () => {
         try {
             if (state === 'Admin') {
                 // Admin login logic remains the same
-                const { data } = await axios.post(`${backendUrl}/api/admin/login`, { email, password });
+                const { data } = await axios.post(`http://localhost:4000/api/admin/login`, { email, password });
                 if (data.success) {
                     handleAdminLogin(data.token);
                     toast.success("Admin login successful!");

@@ -21,6 +21,7 @@ const Sidebar = () => {
         // { path: '/admin/consultations', icon: assets.appointment_icon, label: 'Consultations' },
         // { path: '/admin/add-doctor', icon: assets.add_icon, label: 'Add Doctor' },
         { path: '/admin/doctors', icon: assets.people_icon, label: 'Doctors List' },
+        { path: '/admin/patients', icon: assets.home_icon, label: 'Patient List' },
     ];
 
     const doctorLinks = [
