@@ -12,7 +12,12 @@ import {
   adminDashboard,
   getChatSessions,
   getDoctorProfileForAdmin,
-  updateDoctorProfileByAdmin
+  updateDoctorProfileByAdmin,
+  removeDoctor,
+  allUsers,
+  removeUser,
+
+  updateSettings
 } from '../controllers/adminController.js';
 
 // 2. We can also import this from the doctorController if the admin needs it.
@@ -34,12 +39,15 @@ adminRouter.get("/dashboard", adminDashboard);
 adminRouter.post("/add-doctor", addDoctor);
 adminRouter.get("/all-doctors", allDoctors);
 adminRouter.get("/doctor/:id", getDoctorProfileForAdmin);
+adminRouter.delete("/doctors/:id", removeDoctor);
 adminRouter.patch("/doctor/:id", upload.single('image'), updateDoctorProfileByAdmin); // This is the new route
 adminRouter.post("/change-availability", changeAvailablity); // Admin can change doctor availability
-adminRouter.get("/all-Users",()=>{
-  console.log("Here reached")
-} );
+adminRouter.delete("/users/:id", removeUser);
 
+adminRouter.get("/all-Users",allUsers);
+
+
+adminRouter.put("/settings", updateSettings);
 // --- Consultation / Chat Management ---
 // This is the new route to get a list of all paid chat sessions.
 adminRouter.get("/consultations", getChatSessions);

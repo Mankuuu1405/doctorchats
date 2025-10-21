@@ -4,13 +4,16 @@ import { AdminContext } from '../../context/AdminContext'; // Import AdminContex
 import { AppContext } from '../../context/AppContext';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { useParams } from 'react-router-dom'; // Import useParams
+import { useParams,useNavigate } from 'react-router-dom'; // Import useParams
 
 const DoctorProfile = () => {
     const { dToken, backendUrl } = useContext(DoctorContext);
     const { aToken } = useContext(AdminContext); // Get aToken from AdminContext
     const { currency } = useContext(AppContext);
     const { id } = useParams(); // Get ID from URL parameters
+
+    //navigate
+    const navi=useNavigate();
 
     const [profileData, setProfileData] = useState(null);
     const [originalData, setOriginalData] = useState(null);
@@ -55,7 +58,7 @@ const DoctorProfile = () => {
     };
 
     useEffect(() => {
-        // Only attempt to fetch if we have a valid context (admin with ID or doctor without ID)
+       
         const shouldFetchAsAdmin = id && aToken;
         const shouldFetchAsDoctor = !id && dToken;
 
@@ -74,8 +77,6 @@ const DoctorProfile = () => {
         }
     }, [dToken, aToken, id]);
 
-    // ... rest of the component (handleImageChange, handleSaveChanges, return JSX)
-    // handleSaveChanges will also need to be updated to use the correct endpoint and token
     const handleSaveChanges = async () => {
         try {
             const formData = new FormData();
@@ -114,6 +115,7 @@ const DoctorProfile = () => {
                 toast.success(data.message);
                 setIsEdit(false);
                 getProfileData();
+                navi("/admin/doctors", { state: { shouldReload: true } });
             } else {
                 toast.error(data.message);
             }

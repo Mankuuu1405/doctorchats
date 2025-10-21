@@ -13,15 +13,17 @@ const ConsultationDetailsModal = ({ isOpen, onClose, consultation }) => {
         paymentStatus,
         paymentDetails,
         messages,
-        _id
+        _id,
+        settings
     } = consultation;
+    console.log(consultation);
 
     // Initialize toggle states with nullish coalescing for safety
     const [isUserBlocked, setIsUserBlocked] = useState(userId?.isBlocked ?? false);
     const [isDoctorBlocked, setIsDoctorBlocked] = useState(doctorId?.isBlocked ?? false);
 
     // New state for interest and calculated amount
-    const [interestDeduction, setInterestDeduction] = useState(0); // Admin input
+    const interestDeduction= settings.payoutInterestPercentage// Admin input
     const [amountAfterDeduction, setAmountAfterDeduction] = useState(amount); // Calculated
 
     // Update amountAfterDeduction whenever interestDeduction or original amount changes
@@ -31,58 +33,7 @@ const ConsultationDetailsModal = ({ isOpen, onClose, consultation }) => {
     }, [amount, interestDeduction]);
 
     // ✅ Toggle User Block/Unblock
-    const handleToggleUserStatus = async () => {
-        const newStatus = !isUserBlocked;
-        setIsUserBlocked(newStatus); // Update UI immediately
-
-        try {
-            const response = await fetch(`http://localhost:4000/api/admin/users/${userId._id}/block`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ isBlocked: newStatus }),
-            });
-
-            if (!response.ok) {
-                // Revert on failure
-                setIsUserBlocked(!newStatus);
-                console.error("❌ Failed to update user status on backend.");
-            } else {
-                console.log(`✅ User ${userId._id} is now ${newStatus ? 'Blocked' : 'Active'}.`);
-            }
-        } catch (error) {
-            console.error("⚠️ Error updating user status:", error);
-            setIsUserBlocked(!newStatus);
-        }
-    };
-
-    // ✅ Toggle Doctor Block/Unblock
-    const handleToggleDoctorStatus = async () => {
-        const newStatus = !isDoctorBlocked;
-        setIsDoctorBlocked(newStatus);
-
-        try {
-            const response = await fetch(`http://localhost:4000/api/admin/doctors/${doctorId._id}/block`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ isBlocked: newStatus }),
-            });
-
-            if (!response.ok) {
-                setIsDoctorBlocked(!newStatus);
-                console.error("❌ Failed to update doctor status on backend.");
-            } else {
-                console.log(`✅ Doctor ${doctorId._id} is now ${newStatus ? 'Blocked' : 'Active'}.`);
-            }
-        } catch (error) {
-            console.error("⚠️ Error updating doctor status:", error);
-            setIsDoctorBlocked(!newStatus);
-        }
-    };
-
+    
     // ✅ Handle Pay Now (Doctor Payout)
     const handlePayNow = async () => {
         if (!doctorId?._id) {
@@ -98,43 +49,41 @@ const ConsultationDetailsModal = ({ isOpen, onClose, consultation }) => {
             return;
         }
 
-        try {
-            // This endpoint would handle recording the payout,
-            // deducting from the consultation, and potentially
-            // updating the doctor's balance on the backend.
-            const response = await fetch(`http://localhost:4000/api/admin/payouts/process`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // Include authorization token if required for admin actions
-                    // 'Authorization': `Bearer ${adminAuthToken}`
-                },
-                body: JSON.stringify({
-                    consultationId: _id,
-                    doctorId: doctorId._id,
-                    originalAmount: amount,
-                    interestDeductedPercentage: interestDeduction,
-                    payoutAmount: amountAfterDeduction,
-                    // Add any other relevant payout details like adminId, transactionId etc.
-                }),
-            });
+        // try {
+           
+        //     const response = await fetch(`http://localhost:4000/api/admin/payouts/process`, {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //             // Include authorization token if required for admin actions
+        //             // 'Authorization': `Bearer ${adminAuthToken}`
+        //         },
+        //         body: JSON.stringify({
+        //             consultationId: _id,
+        //             doctorId: doctorId._id,
+        //             originalAmount: amount,
+        //             interestDeductedPercentage: interestDeduction,
+        //             payoutAmount: amountAfterDeduction,
+        //             // Add any other relevant payout details like adminId, transactionId etc.
+        //         }),
+        //     });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                alert(`❌ Payout failed: ${errorData.message || 'Server error'}`);
-                console.error("❌ Payout failed:", errorData);
-            } else {
-                const successData = await response.json();
-                alert(`✅ Payout of ₹${amountAfterDeduction} successful! Transaction ID: ${successData.transactionId || 'N/A'}`);
-                console.log("✅ Payout successful:", successData);
-                // Optionally, you might want to refresh the consultation details
-                // or close the modal if the payout marks it as complete.
-                // onClose(); // Example: Close modal on success
-            }
-        } catch (error) {
-            alert("⚠️ Network error during payout. Please try again.");
-            console.error("⚠️ Network error during payout:", error);
-        }
+        //     if (!response.ok) {
+        //         const errorData = await response.json();
+        //         alert(`❌ Payout failed: ${errorData.message || 'Server error'}`);
+        //         console.error("❌ Payout failed:", errorData);
+        //     } else {
+        //         const successData = await response.json();
+        //         alert(`✅ Payout of ₹${amountAfterDeduction} successful! Transaction ID: ${successData.transactionId || 'N/A'}`);
+        //         console.log("✅ Payout successful:", successData);
+        //         // Optionally, you might want to refresh the consultation details
+        //         // or close the modal if the payout marks it as complete.
+        //         // onClose(); // Example: Close modal on success
+        //     }
+        // } catch (error) {
+        //     alert("⚠️ Network error during payout. Please try again.");
+        //     console.error("⚠️ Network error during payout:", error);
+        // }
     };
 
     return (
@@ -169,7 +118,7 @@ const ConsultationDetailsModal = ({ isOpen, onClose, consultation }) => {
                             <p><strong>ID:</strong> {userId?._id}</p>
 
                             {/* Toggle */}
-                            <div className="mt-4 flex items-center justify-between">
+                            {/* <div className="mt-4 flex items-center justify-between">
                                 <span className="font-medium">Status: </span>
                                 <label htmlFor={`user-toggle-${userId?._id}`} className="flex items-center cursor-pointer">
                                     <div className="relative">
@@ -188,7 +137,7 @@ const ConsultationDetailsModal = ({ isOpen, onClose, consultation }) => {
                                     </div>
                                     <span className="ml-3 font-medium">{isUserBlocked ? 'Blocked' : 'Active'}</span>
                                 </label>
-                            </div>
+                            </div> */}
                         </div>
 
                         {/* Doctor Info */}

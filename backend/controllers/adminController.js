@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import doctorModel from "../models/doctorModel.js";
 import bcrypt from "bcrypt";
 import userModel from "../models/userModel.js";
+import Settings from '../models/settingsModel.js';
 // --- THIS IS THE MOST LIKELY FIX: Correctly import from the file, not the folder ---
 import Chat from "../models/Chat.js"; 
 import cloudinary from '../config/cloudinary.js';
@@ -58,6 +59,20 @@ const allDoctors = async (req, res) => {
     }
 };
 
+
+//get all paitents
+const allUsers = async (req, res) => {
+    console.log("reached here");    
+    try {
+        const Users = await userModel.find({}).select('-password');
+        res.json({ success: true, Users });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Failed to fetch users." });
+    }
+};
+
+
 // === API to get all chat sessions ===
 const getChatSessions = async (req, res) => {
     try {
@@ -79,21 +94,36 @@ const adminDashboard = async (req, res) => {
         const patientsCount = await userModel.countDocuments({});
         const consultationsCount = await Chat.countDocuments({});
         
-        const latestConsultations = await Chat.find({})
+        
+        let settings = await Settings.findOne({});
+        if (!settings) {
+            
+            settings = await new Settings().save(); 
+        }
+         const latestConsultationsDocs = await Chat.find({})
             .populate('userId', 'name image')
             .populate('doctorId', 'name')
             .sort({ createdAt: -1 })
-            .limit(5);
+            .limit(5)
+            .lean(); // Use .lean() for performance and easier manipulation
+         const latestConsultations = latestConsultationsDocs.map(consultation => {
+            return {
+                ...consultation, // Copy all existing properties from the consultation
+                settings: settings  // Add the settings object as a new property
+            };
+        });
 
         const dashData = {
             doctors: doctorsCount,
             patients: patientsCount,
             consultations: consultationsCount, 
-            latestConsultations: latestConsultations
+            latestConsultations: latestConsultations,
+            settings: settings
         };
+
         res.json({ success: true, dashData });
     } catch (error) {
-        console.log("Dashboard Error:", error); // Add more detailed logging
+        console.log("Dashboard Error:", error); 
         res.status(500).json({ success: false, message: "Failed to load dashboard data." });
     }
 };
@@ -150,6 +180,98 @@ const updateDoctorProfileByAdmin = async (req, res) => {
     }
 };
 
+//remove doctor 
+const removeDoctor = async (req, res) => {
+    try {
+        
+        // Find the doctor by the ID provided in the URL and delete them
+        const doctor = await doctorModel.findByIdAndDelete(req.params.id);
+
+        if (!doctor) {
+            // If no doctor was found with that ID, send a 404 Not Found error
+            return res.status(404).json({ success: false, message: "Doctor not found." });
+        }
+        
+       
+        if (doctor.image) {
+            // Extract the public_id from the image URL
+            const publicId = doctor.image.split('/').pop().split('.')[0];
+            if (publicId) {
+                // The folder name must match what you used during upload
+                await cloudinary.uploader.destroy(`doctor_profiles/${publicId}`);
+            }
+        }
+
+        res.json({ success: true, message: "Doctor removed successfully." });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Error removing doctor." });
+    }
+};
+//delete users
+const removeUser = async (req, res) => {
+    console.log("here");
+    try {
+        const user = await userModel.findByIdAndDelete(req.params.id);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found." });
+        }
+
+        // Now, 'cloudinary' will be a defined object and this code will work.
+        if (user.image) {
+            const publicId = user.image.split('/').pop().split('.')[0];
+            if (publicId) {
+                // Ensure the folder name 'user_profiles' is correct.
+                await cloudinary.uploader.destroy(`user_profiles/${publicId}`);
+            }
+        }
+
+        res.json({ success: true, message: "User removed successfully." });
+
+    } catch (error) {
+        console.log("Error removing user:", error);
+        res.status(500).json({ success: false, message: "Error removing user." });
+    }
+};
+
+// const getSettings = async (req, res) => {
+//     try {
+//         // Find the single settings document. If it doesn't exist, create one.
+//         let settings = await Settings.findOne({});
+//         if (!settings) {
+//             settings = await new Settings().save();
+//         }
+//         res.json({ success: true, settings });
+//     } catch (error) {
+//         console.log("Error fetching settings:", error);
+//         res.status(500).json({ success: false, message: "Failed to fetch settings." });
+//     }
+// };
+
+// === API to UPDATE application settings ===
+const updateSettings = async (req, res) => {
+    console.log("hereloo")
+    try {
+        const { payoutInterestPercentage } = req.body;
+
+        // Find the single settings document and update it.
+        // The 'upsert: true' option will create the document if it doesn't exist.
+        const updatedSettings = await Settings.findOneAndUpdate(
+            {}, // Find the one and only document
+            { payoutInterestPercentage }, // Apply the update
+            { new: true, upsert: true, runValidators: true } // Options
+        );
+
+        res.json({ success: true, message: "Settings updated successfully.", settings: updatedSettings });
+    } catch (error) {
+        console.log("Error updating settings:", error);
+        res.status(500).json({ success: false, message: "Failed to update settings." });
+    }
+};
+
+
 export {
     loginAdmin,
     getChatSessions,
@@ -157,5 +279,10 @@ export {
     allDoctors,
     adminDashboard,
     getDoctorProfileForAdmin,
-    updateDoctorProfileByAdmin
+    updateDoctorProfileByAdmin,
+    removeDoctor,
+    allUsers,
+    removeUser,
+    // getSettings,    
+    updateSettings
 }

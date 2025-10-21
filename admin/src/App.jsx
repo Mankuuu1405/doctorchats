@@ -15,6 +15,7 @@ import AdminDashboard from './pages/Admin/Dashboard';
 import AddDoctor from './pages/Admin/AddDoctor';
 import DoctorsList from './pages/Admin/DoctorsList';
 import AllConsultations from './pages/Admin/AllConsultations';
+import PatientList from './pages/Admin/PatientList';
 
 // Import the CORRECT, refactored Doctor pages
 import DoctorDashboard from './pages/Doctor/DoctorDashboard';
@@ -61,6 +62,7 @@ const App = () => {
                                     <Route path="add-doctor" element={<AddDoctor />} />
                                     <Route path="doctors" element={<DoctorsList />} />
                                     <Route path="doctor/:id" element={<DoctorProfile />} />
+                                    <Route path='patients' element={<PatientList/>}/>
                                 </Routes>
                             </main>
                         </div>

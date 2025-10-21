@@ -3,14 +3,16 @@ import { AdminContext } from '../../context/AdminContext';
 import { assets } from '../../assets/assets';
 import { useNavigate } from 'react-router-dom';
 import ConsultationDetailsModal from '../../components/adminComponent/ConsultationDetailsModal.jsx'; // Make sure this path is correct
-
+import SettingsModal from '../../components/adminComponent/SettingsModal.jsx';
 const Dashboard = () => {
-    const { dashData, getDashData } = useContext(AdminContext);
+    const { dashData, getDashData,settings } = useContext(AdminContext);
     const navigate = useNavigate();
 
     // State for managing the modal's visibility and data
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedConsultation, setSelectedConsultation] = useState(null);
+    const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+
 
     // Fetch dashboard data when the component mounts
     // useEffect(() => {
@@ -18,7 +20,7 @@ const Dashboard = () => {
     // }, []); // Empty dependency array means this runs once on mount
 
     // // Log dashData for debugging (optional, can be removed in production)
-     console.log(dashData);
+    
 
     // Show a loading state if dashData is not yet available
     if (!dashData) {
@@ -36,27 +38,33 @@ const Dashboard = () => {
         setIsModalOpen(false);
         setSelectedConsultation(null); // Clear selected data when modal closes
     };
+    const handleUpdateSettings = async (newPercentage) => {
+        // The aToken and backendUrl are needed for the API call
+        settings(newPercentage);
+       
+    };
 
     return (
         <div className='m-5 space-y-8'>
             {/* --- STATISTICS CARDS --- */}
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-5'>
+            <div className='grid grid-cols-1 md:grid-cols-4 gap-5'>
                 <StatCard icon={assets.doctor_icon} title="Total Doctors" value={dashData.doctors} />
                 <StatCard icon={assets.appointments_icon} title="Total Consultations" value={dashData.consultations} />
                 <StatCard icon={assets.patients_icon} title="Total Patients" value={dashData.patients} />
+                <div onClick={() => setIsSettingsModalOpen(true)} className="cursor-pointer">
+    <StatCard 
+        icon={assets.earning_icon}  
+        title="Interest Percentage" 
+        value={`${dashData.settings.payoutInterestPercentage}%`} 
+    />
+</div>
             </div>
 
             {/* --- LATEST CONSULTATIONS LIST --- */}
             <div className='bg-white rounded-lg shadow-md border'>
                 <div className='flex items-center justify-between px-6 py-4 border-b'>
                     <h2 className='font-semibold text-lg text-gray-800'>Latest Consultations</h2>
-                    {/* Optional: Button to view all consultations, currently commented out */}
-                    {/* <button
-                        onClick={() => navigate('/admin/consultations')}
-                        className="text-sm text-teal-600 font-semibold hover:underline"
-                    >
-                        View All
-                    </button> */}
+                   
                 </div>
 
                 <div className='divide-y divide-gray-200'>
@@ -113,6 +121,12 @@ const Dashboard = () => {
                 isOpen={isModalOpen}
                 onClose={closeModal}
                 consultation={selectedConsultation}
+            />
+             <SettingsModal
+                isOpen={isSettingsModalOpen}
+                onClose={() => setIsSettingsModalOpen(false)}
+                currentPercentage={dashData.settings.payoutInterestPercentage}
+                onSave={handleUpdateSettings}
             />
         </div>
     );

@@ -1,73 +1,97 @@
 import React, { useContext, useEffect } from 'react';
 import { AdminContext } from '../../context/AdminContext';
-import { assets } from '../../assets/assets'; // Assuming you might have a default user image here
-import { Link } from 'react-router-dom'; // If you want to link to individual user profiles later
+import { assets } from '../../assets/assets'; // For the default user image
+import { FaTrash } from 'react-icons/fa';
 
 const PatientList = () => {
-    // Destructure the necessary state and functions from AdminContext
-    const { users, aToken, getAllUsers, toggleUserBlockStatus } = useContext(AdminContext);
+    const { users, aToken, getAllUsers, toggleUserBlockStatus,removeUser } = useContext(AdminContext);
 
-    // Fetch users when the component mounts or aToken changes
-    useEffect(() => {
-        if (aToken) {
-            getAllUsers();
-        }
-        // Depend on aToken and getAllUsers to ensure re-fetching when necessary
-    }, [aToken, getAllUsers]);
+    // useEffect(() => {
+    //     if (aToken) {
+    //         getAllUsers();
+    //     }
+    // }, [aToken, getAllUsers]);
 
     const handleToggleBlock = async (userId, currentBlockStatus) => {
-        // Prevent event bubbling if the toggle is inside a Link
-        // event.stopPropagation();
-        // event.preventDefault(); // Might need this if the Link is problematic
-
-        // Call the context function to toggle the block status
-        await toggleUserBlockStatus(userId, !currentBlockStatus);
-        // After toggling, you might want to re-fetch all users to update the UI
-        // Or, if your toggleUserBlockStatus updates the local 'users' state, this isn't strictly necessary.
-        // For simplicity, let's assume toggleUserBlockStatus updates the local state.
+        if (toggleUserBlockStatus) {
+            await toggleUserBlockStatus(userId, !currentBlockStatus);
+        }
+    };
+     const handleDeleteUser = (userId, userName) => {
+        // Show a confirmation dialog before deleting
+        if (window.confirm(`Are you sure you want to delete the user "${userName}"? This action cannot be undone.`)) {
+            removeUser(userId);
+        }
     };
 
-    if (!users || users.length === 0) {
+    // A loading state is good practice
+    if (users === null) {
+        return <div className="p-10 text-center text-gray-500">Loading patients...</div>;
+    }
+
+    // An empty state for when the API returns no users
+    if (users.length === 0) {
         return <div className="p-10 text-center text-gray-500">No patients found.</div>;
     }
+
+    
 
     return (
         <div className='m-5'>
             <h1 className='text-2xl font-bold text-gray-800 mb-6'>Manage Patients</h1>
-            <div className='w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-                {users.map((user) => (
-                    // You can wrap the entire card in a Link to a user profile if needed
-                    // For now, let's make the card clickable, but the toggle needs special handling
-                    <div 
-                        key={user._id}
-                        className='bg-white border rounded-lg shadow-md overflow-hidden transition-transform hover:-translate-y-1'
-                        // If you want to navigate, uncomment Link and adjust handleToggleBlock
-                        // <Link to={`/admin/patient/${user._id}`} key={user._id}>
-                    >
-                        <img
-                            className='w-full h-48 object-cover bg-gray-200'
-                            src={user.image || assets.default_user} // Use a default image if one is missing
-                            alt={`User: ${user.name}`}
-                        />
-                        <div className='p-4'>
-                            <p className='text-lg font-semibold text-gray-800'>{user.name}</p>
-                            <p className='text-sm text-gray-600'>{user.email}</p>
-                            <div className='mt-4 flex items-center justify-between'>
-                                <span className='text-sm text-gray-500'>{user.isBlocked ? 'Blocked' : 'Active'}</span>
-                                <label className="relative inline-flex items-center cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        checked={!user.isBlocked} // Checkbox is checked if user is NOT blocked (i.e., active)
-                                        onChange={() => handleToggleBlock(user._id, user.isBlocked)}
-                                        className="sr-only peer"
-                                    />
-                                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    // </Link>
-                ))}
+
+            {/* --- NEW TABLE STRUCTURE --- */}
+            <div className="bg-white shadow-md rounded-lg overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                        <tr>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                User
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Email
+                            </th>
+                            
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Delete
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                        {users.map((user) => (
+                            <tr key={user._id}>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="flex items-center">
+                                        <div className="flex-shrink-0 h-10 w-10">
+                                            <img 
+                                                className="h-10 w-10 rounded-full object-cover" 
+                                                src={user.image || assets.default_user} 
+                                                alt={`Avatar of ${user.name}`} 
+                                            />
+                                        </div>
+                                        <div className="ml-4">
+                                            <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="text-sm text-gray-900">{user.email}</div>
+                                </td>
+                                
+                                
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <button
+                                        onClick={() => handleDeleteUser(user._id, user.name)}
+                                        className="text-red-600 hover:text-red-900 transition-colors duration-200"
+                                        title="Delete User"
+                                    >
+                                        <FaTrash size={18} />
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </div>
     );
