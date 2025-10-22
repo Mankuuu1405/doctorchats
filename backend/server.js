@@ -7,6 +7,9 @@ import userRouter from "./routes/userRoute.js"
 import doctorRouter from "./routes/doctorRoute.js"
 import adminRouter from "./routes/adminRoute.js"
 import chatrouter from "./routes/chatRoutes.js"
+import customChatRoute from "./routes/customChatRoute.js";
+
+//import aiChatRouter from "./routes/aiChatRoute.js"; // 👈 NEW: AI Chatbot route
 
 // app config
 const app = express()
@@ -21,6 +24,7 @@ app.use(express.json())
 // Define allowed origins for production, but include localhost for development
 const allowedOrigins = [
   "http://localhost:5173", // Your frontend development server
+  "http://localhost:5174",
   "https://cywala.com",
   "https://www.cywala.com"
 ];
@@ -48,6 +52,8 @@ app.use("/api/user", userRouter)
 app.use("/api/admin", adminRouter)
 app.use("/api/doctor", doctorRouter)
 app.use('/api/chats', chatrouter);
+app.use("/api", customChatRoute);
+//app.use("/api/ai", aiChatRouter); // 👈 NEW endpoint for Hugging Face chatbot
 
 app.get("/", (req, res) => {
   res.send("API Working")
