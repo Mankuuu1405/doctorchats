@@ -10,12 +10,22 @@ router.post("/chat", async (req, res) => {
     const { message } = req.body;
     const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
+    const systemPrompt = `
+You are a virtual assistant for a doctor consultation platform called "Cywala".
+Your job is to help users with:
+- Booking doctor consultations and appointments.
+- Payment-related queries (e.g., Razorpay, transaction status).
+- Health tips and doctor availability.
+- Website usage guidance (login, registration, profile updates).
+If a question is unrelated (e.g., about politics or math), politely tell them you only assist with Cywala health-related queries.
+`;
+
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
-        model: "meta-llama/llama-3.1-8b-instruct", // ✅ Corrected model ID
+        model: "meta-llama/llama-3.1-8b-instruct",
         messages: [
-          { role: "system", content: "You are a helpful AI assistant." },
+          { role: "system", content: systemPrompt },
           { role: "user", content: message },
         ],
       },
