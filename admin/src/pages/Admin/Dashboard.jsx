@@ -76,22 +76,22 @@ const Dashboard = () => {
                                 <div className='flex items-center gap-3'>
                                     <img 
                                         className='rounded-full w-10 h-10 object-cover' 
-                                        src={chat.userId.image || assets.default_user} 
+                                        src={chat.userId?.image || assets.default_user} 
                                         alt="Patient" 
                                     />
                                     <div>
-                                        <p className='text-gray-800 font-semibold'>{chat.userId.name}</p>
+                                        <p className='text-gray-800 font-semibold'>{chat.userId?.name || 'Unknown Patient'}</p>
                                     </div>
                                 </div>
                                 {/* Doctor Information */}
                                 <div className='flex items-center gap-3'>
                                     <img 
                                         className='rounded-full w-10 h-10 object-cover' 
-                                        src={chat.doctorId.image || assets.default_doctor} 
+                                        src={chat.doctorId?.image || assets.default_doctor} 
                                         alt="Doctor" 
                                     />
                                     <div>
-                                        <p className='text-gray-800 font-semibold'>{chat.doctorId.name}</p>
+                                        <p className='text-gray-800 font-semibold'>{chat.doctorId?.name || 'Unknown Doctor'}</p>
                                     </div>
                                 </div>
                                 {/* Consultation Date */}
