@@ -22,6 +22,12 @@ const DoctorDashboard = () => {
     const [consultations, setConsultations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
+
+     const formatDate = (dateString) => {
+        if (!dateString) return "Not Set";
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString(undefined, options);
+    };
     useEffect(() => {
         const fetchData = async () => {
             if (!dToken) {
@@ -56,14 +62,19 @@ const DoctorDashboard = () => {
     if (isLoading) {
         return <LoadingSpinner />;
     }
-
+    console.log(dashData);
     return (
         <div className='p-5 space-y-8'>
             {/* --- STATISTICS CARDS --- */}
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-5'>
+            <div className='grid grid-cols-1 md:grid-cols-4 gap-5'>
                 <StatCard icon={assets.earning_icon} title="Total Earnings" value={`${currency}${dashData?.earnings || 0}`} />
                 <StatCard icon={assets.appointments_icon} title="Active Consultations" value={dashData?.activeChats || 0} />
                 <StatCard icon={assets.patients_icon} title="Total Patients" value={dashData?.totalPatients || 0} />
+                <StatCard 
+                    icon={assets.earning_icon} // Using a relevant icon
+                    title="Next Payout Date" 
+                    value={formatDate(dashData?.settings?.payoutDate)} 
+                />
             </div>
 
             {/* --- CONSULTATIONS LIST --- */}

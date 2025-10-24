@@ -17,7 +17,8 @@ import {
   allUsers,
   removeUser,
 
-  updateSettings
+  updateSettings,
+  getMonthlyPayments
 } from '../controllers/adminController.js';
 
 // 2. We can also import this from the doctorController if the admin needs it.
@@ -53,5 +54,6 @@ adminRouter.put("/settings", updateSettings);
 adminRouter.get("/consultations", getChatSessions);
 
 // The '/cancel-appointment' route has been removed as it is no longer needed.
+adminRouter.get('/monthly-payments', authAdmin, getMonthlyPayments);
 
 export default adminRouter;

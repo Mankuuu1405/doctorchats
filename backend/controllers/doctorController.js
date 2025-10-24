@@ -4,6 +4,7 @@ import doctorModel from "../models/doctorModel.js";
 import Chat from "../models/Chat.js";
 import sendEmail from "../utils/sendEmail.js";
 import { uploadToCloudinary } from "../middleware/multer.js";
+import Settings from "../models/settingsModel.js";
 
 // --- Doctor Registration: Step 1 ---
 // Handles initial signup request and sends an OTP to the doctor's email.
@@ -119,33 +120,58 @@ const loginDoctor = async (req, res) => {
 // Handles profile updates and marks the profile as 'complete'.
 const updateDoctorProfile = async (req, res) => {
     try {
-        const docId = req.doctor.id;
-        const { speciality, degree, experience, about, fees, available } = req.body;
+        // This assumes you have middleware that adds the doctor's ID to req.doctor.id
+        const docId = req.doctor.id; 
+        
+        // Destructure all fields from the request body
+        const { speciality, degree, experience, about, fees, available, payment } = req.body;
 
-        let updateFields = { speciality, degree, experience, about, fees, available };
+        // Start building the object with fields to update
+        const updateFields = {
+            speciality,
+            degree,
+            experience,
+            about,
+            fees,
+            available,
+            profileStatus: 'complete' // Mark profile as complete on any successful update
+        };
 
-        // --- FIX: When the profile is updated, mark it as complete. ---
-        // This stops the forced redirect to the profile page on subsequent logins.
-        updateFields.profileStatus = 'complete';
+        // If payment data is sent, parse it and add it to the update object
+        if (payment) {
+            try {
+                // Since the data is from FormData, the payment object will be a string
+                updateFields.payment = JSON.parse(payment);
+            } catch (e) {
+                // Handle cases where the payment string is not valid JSON
+                return res.status(400).json({ success: false, message: "Invalid payment data format." });
+            }
+        }
 
+        // Handle the image file if it's uploaded
         if (req.file) {
             const imageUrl = await uploadToCloudinary(req.file);
             updateFields.image = imageUrl;
         }
 
-        const updatedDoctor = await doctorModel.findByIdAndUpdate(docId, 
-            updateFields,
-            { new: true, runValidators: true }
-        ).select('-password');
+        // Find the doctor by their ID and update their profile with the new data
+        const updatedDoctor = await doctorModel.findByIdAndUpdate(
+            docId,
+            { $set: updateFields }, // Use $set to update only the provided fields
+            { new: true, runValidators: true } // Return the updated document and run schema validators
+        ).select('-password'); // Exclude the password from the returned data
 
+        // If no doctor was found with that ID
         if (!updatedDoctor) {
             return res.status(404).json({ success: false, message: "Doctor not found." });
         }
 
+        // Send a success response with the updated profile data
         res.json({ success: true, message: 'Profile Updated Successfully', profileData: updatedDoctor });
+
     } catch (error) {
         console.log(error);
-        res.status(500).json({ success: false, message: error.message });
+        res.status(500).json({ success: false, message: "An error occurred while updating the profile." });
     }
 }
 
@@ -189,18 +215,47 @@ const doctorProfile = async (req, res) => {
 }
 
 const doctorDashboard = async (req, res) => {
-    try {
+   try {
         const doctorId = req.doctor.id;
-        const allPaidChats = await Chat.find({ doctorId: doctorId, paymentStatus: true });
+
+        // Use Promise.all to fetch all required data in parallel for better performance.
+        // This is more efficient than running database queries one after another.
+        const [allPaidChats, activeChatCount, settings] = await Promise.all([
+            Chat.find({ doctorId: doctorId, paymentStatus: true }),
+            Chat.countDocuments({ 
+                doctorId: doctorId, 
+                paymentStatus: true, 
+                expiresAt: { $gt: new Date() } 
+            }),
+            Settings.findOne({}) // 2. FETCH the single settings document from the database.
+        ]);
+
+        // Calculate total earnings from the chats fetched.
         const totalEarnings = allPaidChats.reduce((sum, chat) => sum + (chat.amount || 0), 0);
+
+        // Use a Set to efficiently count unique patients.
         const patientIds = new Set(allPaidChats.map(chat => chat.userId.toString()));
         const totalPatients = patientIds.size;
-        const activeChatCount = await Chat.countDocuments({ doctorId: doctorId, paymentStatus: true, expiresAt: { $gt: new Date() } });
-        const dashData = { earnings: totalEarnings, activeChats: activeChatCount, totalPatients: totalPatients, latestChats: allPaidChats.sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 5) };
+
+        // Sort chats by the most recently updated and take the top 5 for a "latest" list.
+        const latestChats = allPaidChats.sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 5);
+
+        // Construct the final data object to be sent to the frontend.
+        const dashData = {
+            earnings: totalEarnings,
+            activeChats: activeChatCount,
+            totalPatients: totalPatients,
+            latestChats: latestChats,
+            settings: settings // 3. ADD the fetched settings object to the response.
+        };
+
+        // Send the successful response.
         res.json({ success: true, dashData });
+
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ success: false, message: error.message });
+        // Log the error for debugging and send a generic server error message.
+        console.log("Error in doctorDashboard:", error);
+        res.status(500).json({ success: false, message: "An error occurred while fetching dashboard data." });
     }
 }
 

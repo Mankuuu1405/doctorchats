@@ -1,5 +1,12 @@
 import mongoose from 'mongoose';
 
+// Function to calculate the default payout date (one month from now)
+const getDefaultPayoutDate = () => {
+    const date = new Date();
+    date.setMonth(date.getMonth() + 1);
+    return date;
+};
+
 const settingsSchema = new mongoose.Schema({
     payoutInterestPercentage: {
         type: Number,
@@ -8,12 +15,17 @@ const settingsSchema = new mongoose.Schema({
         max: 100,
         default: 30
     },
-    // You can add more global settings here in the future
-    // e.g., siteTitle: { type: String, default: 'My App' }
+    // Add the new field for the payout date
+    payoutDate: {
+        type: Date,
+        required: true,
+        default: getDefaultPayoutDate // Use the function to set the default value
+    }
 }, {
     timestamps: true // Adds createdAt and updatedAt timestamps
 });
 
-const Settings = mongoose.model('Settings', settingsSchema);
+// The rest of the file remains the same
+const Settings = mongoose.models.Settings || mongoose.model('Settings', settingsSchema);
 
 export default Settings;

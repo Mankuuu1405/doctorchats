@@ -1,56 +1,72 @@
 import React, { useState, useEffect } from 'react';
 
-const SettingsModal = ({ isOpen, onClose, currentPercentage, onSave }) => {
-    // Internal state to manage the input field's value
+const SettingsModal = ({ isOpen, onClose, currentPercentage, currentPayoutDate, onSave }) => {
     const [percentage, setPercentage] = useState(currentPercentage);
-    const [isSaving, setIsSaving] = useState(false);
+    const [payoutDate, setPayoutDate] = useState('');
 
-    // This effect ensures that if the modal is re-opened,
-    // it always shows the most current percentage from the dashboard.
+    // Function to get next month's date in YYYY-MM-DD format
+    const getDefaultDate = () => {
+        const date = new Date();
+        date.setMonth(date.getMonth() + 1);
+        return date.toISOString().split('T')[0];
+    };
+
+    // Update internal state when the modal opens or props change
     useEffect(() => {
-        setPercentage(currentPercentage);
-    }, [currentPercentage]);
+        if (isOpen) {
+            setPercentage(currentPercentage || 0);
+            setPayoutDate(currentPayoutDate || getDefaultDate());
+        }
+    }, [isOpen, currentPercentage, currentPayoutDate]);
 
     if (!isOpen) {
         return null;
     }
 
-    const handleSave = async () => {
-        setIsSaving(true);
-        // The onSave function (passed from Dashboard.jsx) does the actual API call.
-        // We pass the new percentage value back to it.
-        await onSave(percentage);
-        setIsSaving(false);
+    const handleSave = () => {
+        // Pass an object with both values back to the parent
+        onSave({
+            payoutInterestPercentage: percentage,
+            payoutDate: payoutDate,
+        });
         onClose(); // Close the modal after saving
     };
 
     return (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex justify-center items-center z-50">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 space-y-4">
-                <h3 className="text-xl font-semibold text-gray-800">Update Interest Percentage</h3>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
+                <h2 className="text-xl font-semibold mb-4">Admin Settings</h2>
                 
-                <div>
-                    <label htmlFor="interest-percentage" className="block text-sm font-medium text-gray-700 mb-1">
-                        Interest to be deducted (%)
+                {/* Percentage Input */}
+                <div className="mb-4">
+                    <label htmlFor="percentage" className="block text-sm font-medium text-gray-700 mb-1">
+                        Payout Interest Percentage (%)
                     </label>
                     <input
                         type="number"
-                        id="interest-percentage"
+                        id="percentage"
                         value={percentage}
-                        onChange={(e) => {
-                            const value = parseFloat(e.target.value);
-                            // Ensure the value is a number between 0 and 100
-                            setPercentage(isNaN(value) ? 0 : Math.max(0, Math.min(100, value)));
-                        }}
-                        min="0"
-                        max="100"
-                        step="0.1"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        onChange={(e) => setPercentage(Number(e.target.value))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
                     />
                 </div>
 
-                {/* --- Action Buttons --- */}
-                <div className="flex justify-end gap-4 pt-4">
+                {/* Date Input */}
+                <div className="mb-6">
+                    <label htmlFor="payoutDate" className="block text-sm font-medium text-gray-700 mb-1">
+                        Next Payout Date
+                    </label>
+                    <input
+                        type="date"
+                        id="payoutDate"
+                        value={payoutDate}
+                        onChange={(e) => setPayoutDate(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                </div>
+                
+                {/* Action Buttons */}
+                <div className="flex justify-end gap-4">
                     <button
                         onClick={onClose}
                         className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
@@ -59,10 +75,9 @@ const SettingsModal = ({ isOpen, onClose, currentPercentage, onSave }) => {
                     </button>
                     <button
                         onClick={handleSave}
-                        disabled={isSaving}
-                        className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 disabled:bg-teal-300"
+                        className="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600"
                     >
-                        {isSaving ? 'Saving...' : 'Save Changes'}
+                        Save Settings
                     </button>
                 </div>
             </div>

@@ -212,26 +212,36 @@ const removeDoctor = async (req, res) => {
 //delete users
 const removeUser = async (req, res) => {
     console.log("here");
-    try {
+     try {
         const user = await userModel.findByIdAndDelete(req.params.id);
 
         if (!user) {
             return res.status(404).json({ success: false, message: "User not found." });
         }
 
-        // Now, 'cloudinary' will be a defined object and this code will work.
         if (user.image) {
+            // --- ADD THIS LOG RIGHT BEFORE THE 'destroy' CALL ---
+            console.log("Cloudinary object inside removeUser:", cloudinary);
+
             const publicId = user.image.split('/').pop().split('.')[0];
+            
             if (publicId) {
-                // Ensure the folder name 'user_profiles' is correct.
-                await cloudinary.uploader.destroy(`user_profiles/${publicId}`);
+                // We will also add a try/catch here for robustness
+                try {
+                    console.log(`Attempting to destroy: user_profiles/${publicId}`);
+                    const deleteResult = await cloudinary.uploader.destroy(`user_profiles/${publicId}`);
+                    console.log("Cloudinary delete result:", deleteResult);
+                } catch (cloudinaryError) {
+                    console.log("An error occurred during Cloudinary deletion:", cloudinaryError);
+                    // We don't stop the function, as the user is already deleted from DB
+                }
             }
         }
 
         res.json({ success: true, message: "User removed successfully." });
 
     } catch (error) {
-        console.log("Error removing user:", error);
+        console.log("Error removing user:", error); // This is where your TypeError is caught
         res.status(500).json({ success: false, message: "Error removing user." });
     }
 };
@@ -252,25 +262,131 @@ const removeUser = async (req, res) => {
 
 // === API to UPDATE application settings ===
 const updateSettings = async (req, res) => {
-    console.log("hereloo")
-    try {
-        const { payoutInterestPercentage } = req.body;
+     try {
+       
+        const nestedData = req.body.payoutInterestPercentage;
 
-        // Find the single settings document and update it.
-        // The 'upsert: true' option will create the document if it doesn't exist.
+        // --- STEP 3: VALIDATE THE NESTED OBJECT ---
+        // This is a crucial check to ensure the request is not malformed.
+        if (!nestedData || typeof nestedData !== 'object') {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Invalid request structure. Expected a nested settings object." 
+            });
+        }
+
+        // --- STEP 4: EXTRACT THE FINAL VALUES FROM THE NESTED OBJECT ---
+        const { payoutInterestPercentage, payoutDate } = nestedData;
+
+        // --- STEP 5: BUILD THE CORRECT, FLAT PAYLOAD FOR MONGOOSE ---
+        const updatePayload = {
+            payoutInterestPercentage,
+            payoutDate
+        };
+
+        // --- STEP 6: PERFORM THE DATABASE UPDATE ---
         const updatedSettings = await Settings.findOneAndUpdate(
-            {}, // Find the one and only document
-            { payoutInterestPercentage }, // Apply the update
+            {},             // Find the one and only settings document
+            updatePayload,  // Apply the correctly structured update
             { new: true, upsert: true, runValidators: true } // Options
         );
 
         res.json({ success: true, message: "Settings updated successfully.", settings: updatedSettings });
+
     } catch (error) {
         console.log("Error updating settings:", error);
         res.status(500).json({ success: false, message: "Failed to update settings." });
     }
 };
 
+
+const getMonthlyPayments = async (req, res) => {
+  try {
+    // Get current month's start and end dates
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+ 
+    // Get platform fee percentage from settings
+    const settings = await Settings.findOne();
+    const platformFeePercentage = settings?.payoutInterestPercentage || 30;
+ 
+    // Aggregate consultations by doctor for current month
+    const consultations = await Chat.aggregate([
+      {
+        $match: {
+          paymentStatus: true,
+          createdAt: {
+            $gte: startOfMonth,
+            $lte: endOfMonth
+          }
+        }
+      },
+      {
+        $group: {
+          _id: '$doctorId',
+          totalConsultations: { $sum: 1 },
+          totalAmount: { $sum: '$amount' }
+        }
+      }
+    ]);
+ 
+    // Prepare payment data for each doctor
+    const paymentPromises = consultations.map(async (consultation) => {
+      const doctor = await doctorModel.findById(consultation._id).select(
+        'name email speciality payment'
+      );
+ 
+      if (!doctor) return null;
+ 
+      const grossAmount = consultation.totalAmount;
+      const platformFee = (grossAmount * platformFeePercentage) / 100;
+      const netPayout = grossAmount - platformFee;
+ 
+      return {
+        doctorId: consultation._id,
+        name: doctor.name,
+        email: doctor.email,
+        speciality: doctor.speciality,
+        totalConsultations: consultation.totalConsultations,
+        grossAmount,
+        platformFeePercentage,
+        platformFee,
+        netPayout,
+        payment: {
+          bankAccount: {
+            accountHolderName: doctor.payment?.bankAccount?.accountHolderName || '',
+            accountNumber: doctor.payment?.bankAccount?.accountNumber || '',
+            ifscCode: doctor.payment?.bankAccount?.ifscCode || '',
+            bankName: doctor.payment?.bankAccount?.bankName || ''
+          },
+          razorpay: {
+            accountId: doctor.payment?.razorpay?.accountId || '',
+            keyId: doctor.payment?.razorpay?.keyId || ''
+          }
+        }
+      };
+    });
+ 
+    const payments = (await Promise.all(paymentPromises)).filter(p => p !== null);
+ 
+    res.json({
+      success: true,
+      payments,
+      month: now.toLocaleString('default', { month: 'long', year: 'numeric' }),
+      totalDoctors: payments.length,
+      totalGrossAmount: payments.reduce((sum, p) => sum + p.grossAmount, 0),
+      totalNetPayout: payments.reduce((sum, p) => sum + p.netPayout, 0)
+    });
+ 
+  } catch (error) {
+    console.error('Error fetching monthly payments:', error);
+    res.json({
+      success: false,
+      message: error.message
+    });
+  }
+};
 
 export {
     loginAdmin,
@@ -284,5 +400,6 @@ export {
     allUsers,
     removeUser,
     // getSettings,    
-    updateSettings
+    updateSettings,
+    getMonthlyPayments
 }

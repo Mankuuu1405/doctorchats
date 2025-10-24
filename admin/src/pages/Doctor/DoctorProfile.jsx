@@ -4,7 +4,7 @@ import { AdminContext } from '../../context/AdminContext'; // Import AdminContex
 import { AppContext } from '../../context/AppContext';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { useParams,useNavigate } from 'react-router-dom'; // Import useParams
+import { useParams, useNavigate } from 'react-router-dom'; // Import useParams
 
 const DoctorProfile = () => {
     const { dToken, backendUrl } = useContext(DoctorContext);
@@ -13,7 +13,7 @@ const DoctorProfile = () => {
     const { id } = useParams(); // Get ID from URL parameters
 
     //navigate
-    const navi=useNavigate();
+    const navi = useNavigate();
 
     const [profileData, setProfileData] = useState(null);
     const [originalData, setOriginalData] = useState(null);
@@ -58,7 +58,7 @@ const DoctorProfile = () => {
     };
 
     useEffect(() => {
-       
+
         const shouldFetchAsAdmin = id && aToken;
         const shouldFetchAsDoctor = !id && dToken;
 
@@ -82,7 +82,11 @@ const DoctorProfile = () => {
             const formData = new FormData();
             for (const key in profileData) {
                 if (key !== 'image' && profileData[key] !== null) {
-                    formData.append(key, profileData[key]);
+                    if (typeof profileData[key] === 'object' && profileData[key] !== null) {
+                        formData.append(key, JSON.stringify(profileData[key]));
+                    } else {
+                        formData.append(key, profileData[key]);
+                    }
                 }
             }
             if (imageFile) {
@@ -208,14 +212,27 @@ const DoctorProfile = () => {
                             <InfoField label="Consultation Fee" type="number" value={profileData.fees} isEdit={isEdit} onChange={(e) => setProfileData(p => ({ ...p, fees: e.target.value }))} prefix={currency} />
                         </div>
                     </div>
+
+                    <div>
+                        <h3 className="text-lg font-semibold text-gray-700 mb-4">Payment Details</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <InfoField label="Account Holder Name" value={profileData.payment?.bankAccount?.accountHolderName} isEdit={isEdit} onChange={(e) => setProfileData(p => ({ ...p, payment: { ...p.payment, bankAccount: { ...p.payment?.bankAccount, accountHolderName: e.target.value } } }))} />
+                            <InfoField label="Account Number" value={profileData.payment?.bankAccount?.accountNumber} isEdit={isEdit} onChange={(e) => setProfileData(p => ({ ...p, payment: { ...p.payment, bankAccount: { ...p.payment?.bankAccount, accountNumber: e.target.value } } }))} />
+                            <InfoField label="IFSC Code" value={profileData.payment?.bankAccount?.ifscCode} isEdit={isEdit} onChange={(e) => setProfileData(p => ({ ...p, payment: { ...p.payment, bankAccount: { ...p.payment?.bankAccount, ifscCode: e.target.value } } }))} />
+                            <InfoField label="Bank Name" value={profileData.payment?.bankAccount?.bankName} isEdit={isEdit} onChange={(e) => setProfileData(p => ({ ...p, payment: { ...p.payment, bankAccount: { ...p.payment?.bankAccount, bankName: e.target.value } } }))} />
+                            <InfoField label="Razorpay Account ID" value={profileData.payment?.razorpay?.accountId} isEdit={isEdit} onChange={(e) => setProfileData(p => ({ ...p, payment: { ...p.payment, razorpay: { ...p.payment?.razorpay, accountId: e.target.value } } }))} />
+                            <InfoField label="Razorpay Key ID" value={profileData.payment?.razorpay?.keyId} isEdit={isEdit} onChange={(e) => setProfileData(p => ({ ...p, payment: { ...p.payment, razorpay: { ...p.payment?.razorpay, keyId: e.target.value } } }))} />
+                        </div>
+                    </div>
+
                     <div>
                         <h3 className="text-lg font-semibold text-gray-700 mb-2">About</h3>
                         {isEdit ? <textarea className='w-full bg-gray-100 border rounded-lg p-3' rows={5} value={profileData.about} onChange={(e) => setProfileData(p => ({ ...p, about: e.target.value }))} /> : <p className="text-gray-600">{profileData.about}</p>}
                     </div>
                     <div className="flex items-center gap-3">
-                         <h3 className="text-lg font-semibold text-gray-700">Available for Consultations</h3>
-                         <label className="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" checked={profileData.available} onChange={() => isEdit && setProfileData(p => ({ ...p, available: !p.available }))} className="sr-only peer" disabled={!isEdit}/>
+                        <h3 className="text-lg font-semibold text-gray-700">Available for Consultations</h3>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" checked={profileData.available} onChange={() => isEdit && setProfileData(p => ({ ...p, available: !p.available }))} className="sr-only peer" disabled={!isEdit} />
                             <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
                         </label>
                     </div>
@@ -248,6 +265,7 @@ const specialities = [
     "Anesthesiologist",
     "Radiologist"
 ];
+
 const InfoField = ({ label, value, isEdit, onChange, type = 'text', prefix }) => (
     <div>
         <label className="block text-sm font-medium text-gray-600 mb-1">{label}</label>

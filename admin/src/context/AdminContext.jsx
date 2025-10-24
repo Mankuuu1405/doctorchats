@@ -113,7 +113,7 @@ const AdminContextProvider = (props) => {
         }
     };
     const settings=async (newPercentage)=>{
-         try {
+          try {
                     const response = await fetch(`${backendUrl}/api/admin/settings`, {
                         method: 'PUT',
                         headers: {
