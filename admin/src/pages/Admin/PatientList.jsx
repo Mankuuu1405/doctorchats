@@ -65,8 +65,8 @@ const PatientList = () => {
                                         <div className="flex-shrink-0 h-10 w-10">
                                             <img 
                                                 className="h-10 w-10 rounded-full object-cover" 
-                                                src={user.image || assets.default_user} 
-                                                alt={`Avatar of ${user.name}`} 
+                                                src={user?.image || assets.default_user} 
+                                                alt={`Avatar of ${user?.name || 'Unknown User'}`} 
                                             />
                                         </div>
                                         <div className="ml-4">
