@@ -75,8 +75,8 @@ const DoctorsList = () => {
                             <div className='bg-white border rounded-lg shadow-md overflow-hidden transition-transform hover:-translate-y-1 h-full'>
                                 <img
                                     className='w-full h-48 object-cover bg-gray-200'
-                                    src={doctor.image || assets.default_doctor}
-                                    alt={`Dr. ${doctor.name}`}
+                                    src={doctor?.image || assets.default_doctor}
+                                    alt={`Dr. ${doctor?.name || 'Unknown Doctor'}`}
                                 />
                                 <div className='p-4'>
                                     <p className='text-lg font-semibold text-gray-800'>{doctor.name}</p>
