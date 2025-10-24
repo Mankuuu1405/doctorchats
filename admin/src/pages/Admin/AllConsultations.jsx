@@ -43,18 +43,18 @@ const AllConsultations = () => {
                             <div key={chat._id} className='grid grid-cols-1 sm:grid-cols-5 gap-4 items-center py-3 px-6 border-b hover:bg-gray-50'>
                                 {/* Patient Info */}
                                 <div className='flex items-center gap-3'>
-                                    <img src={chat.userId.image || assets.default_user} className='w-9 h-9 rounded-full object-cover' alt="Patient" />
+                                    <img src={chat.userId?.image || assets.default_user} className='w-9 h-9 rounded-full object-cover' alt="Patient" />
                                     <div>
-                                        <p className="font-medium text-gray-800">{chat.userId.name}</p>
-                                        <p className="text-xs text-gray-500">{chat.userId.email}</p>
+                                        <p className="font-medium text-gray-800">{chat.userId?.name || 'Unknown Patient'}</p>
+                                        <p className="text-xs text-gray-500">{chat.userId?.email || 'No email'}</p>
                                     </div>
                                 </div>
                                 {/* Doctor Info */}
                                 <div className='flex items-center gap-3'>
-                                    <img src={chat.doctorId.image || assets.default_doctor} className='w-9 h-9 rounded-full object-cover' alt="Doctor" />
+                                    <img src={chat.doctorId?.image || assets.default_doctor} className='w-9 h-9 rounded-full object-cover' alt="Doctor" />
                                     <div>
-                                        <p className="font-medium text-gray-800">{chat.doctorId.name}</p>
-                                        <p className="text-xs text-gray-500">{chat.doctorId.speciality}</p>
+                                        <p className="font-medium text-gray-800">{chat.doctorId?.name || 'Unknown Doctor'}</p>
+                                        <p className="text-xs text-gray-500">{chat.doctorId?.speciality || 'No speciality'}</p>
                                     </div>
                                 </div>
                                 {/* Date */}
