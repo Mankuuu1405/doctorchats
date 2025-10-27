@@ -301,93 +301,90 @@ const updateSettings = async (req, res) => {
 
 
 const getMonthlyPayments = async (req, res) => {
-  try {
-    // Get current month's start and end dates
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
- 
-    // Get platform fee percentage from settings
-    const settings = await Settings.findOne();
-    const platformFeePercentage = settings?.payoutInterestPercentage || 30;
- 
-    // Aggregate consultations by doctor for current month
-    const consultations = await Chat.aggregate([
-      {
-        $match: {
-          paymentStatus: true,
-          createdAt: {
-            $gte: startOfMonth,
-            $lte: endOfMonth
-          }
-        }
-      },
-      {
-        $group: {
-          _id: '$doctorId',
-          totalConsultations: { $sum: 1 },
-          totalAmount: { $sum: '$amount' }
-        }
-      }
-    ]);
- 
-    // Prepare payment data for each doctor
-    const paymentPromises = consultations.map(async (consultation) => {
-      const doctor = await doctorModel.findById(consultation._id).select(
-        'name email speciality payment'
-      );
- 
-      if (!doctor) return null;
- 
-      const grossAmount = consultation.totalAmount;
-      const platformFee = (grossAmount * platformFeePercentage) / 100;
-      const netPayout = grossAmount - platformFee;
- 
-      return {
-        doctorId: consultation._id,
-        name: doctor.name,
-        email: doctor.email,
-        speciality: doctor.speciality,
-        totalConsultations: consultation.totalConsultations,
-        grossAmount,
-        platformFeePercentage,
-        platformFee,
-        netPayout,
-        payment: {
-          bankAccount: {
-            accountHolderName: doctor.payment?.bankAccount?.accountHolderName || '',
-            accountNumber: doctor.payment?.bankAccount?.accountNumber || '',
-            ifscCode: doctor.payment?.bankAccount?.ifscCode || '',
-            bankName: doctor.payment?.bankAccount?.bankName || ''
-          },
-          razorpay: {
-            accountId: doctor.payment?.razorpay?.accountId || '',
-            keyId: doctor.payment?.razorpay?.keyId || ''
-          }
-        }
-      };
-    });
- 
-    const payments = (await Promise.all(paymentPromises)).filter(p => p !== null);
- 
-    res.json({
-      success: true,
-      payments,
-      month: now.toLocaleString('default', { month: 'long', year: 'numeric' }),
-      totalDoctors: payments.length,
-      totalGrossAmount: payments.reduce((sum, p) => sum + p.grossAmount, 0),
-      totalNetPayout: payments.reduce((sum, p) => sum + p.netPayout, 0)
-    });
- 
-  } catch (error) {
-    console.error('Error fetching monthly payments:', error);
-    res.json({
-      success: false,
-      message: error.message
-    });
-  }
-};
+    try {
+        // Get current month's start and end dates
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
 
+        // Get platform fee percentage from settings
+        const settings = await Settings.findOne();
+        const platformFeePercentage = settings?.payoutInterestPercentage || 30;
+
+        // Aggregate consultations by doctor for the current month
+        const consultations = await Chat.aggregate([
+            {
+                $match: {
+                    paymentStatus: true,
+                    createdAt: {
+                        $gte: startOfMonth,
+                        $lte: endOfMonth
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: '$doctorId',
+                    totalConsultations: { $sum: 1 },
+                    totalAmount: { $sum: '$amount' }
+                }
+            }
+        ]);
+
+        // Prepare payment data for each doctor
+        const paymentPromises = consultations.map(async (consultation) => {
+            // Select the new, top-level fields instead of the old 'payment' object
+            const doctor = await doctorModel.findById(consultation._id).select(
+                'name email speciality accountHolderName mobileNumber address bankName branchName accountNo ifscNo'
+            );
+
+            if (!doctor) return null;
+
+            const grossAmount = consultation.totalAmount;
+            const platformFee = (grossAmount * platformFeePercentage) / 100;
+            const netPayout = grossAmount - platformFee;
+
+            // Restructure the returned object with the new fields
+            return {
+                doctorId: consultation._id,
+                name: doctor.name,
+                email: doctor.email,
+                speciality: doctor.speciality,
+                totalConsultations: consultation.totalConsultations,
+                grossAmount,
+                platformFeePercentage,
+                platformFee,
+                netPayout,
+                // Use the new fields directly
+                accountHolderName: doctor.accountHolderName || '',
+                mobileNumber: doctor.mobileNumber || '',
+                address: doctor.address || '',
+                bankName: doctor.bankName || '',
+                branchName: doctor.branchName || '',
+                accountNo: doctor.accountNo || '',
+                ifscNo: doctor.ifscNo || ''
+            };
+        });
+
+        const payments = (await Promise.all(paymentPromises)).filter(p => p !== null);
+
+        res.json({
+            success: true,
+            payments,
+            month: now.toLocaleString('default', { month: 'long', year: 'numeric' }),
+            totalDoctors: payments.length,
+            totalGrossAmount: payments.reduce((sum, p) => sum + p.grossAmount, 0),
+            totalNetPayout: payments.reduce((sum, p) => sum + p.netPayout, 0)
+        });
+
+    } catch (error) {
+        console.error('Error fetching monthly payments:', error);
+        res.status(500).json({ // Use 500 for server errors
+            success: false,
+            message: "An error occurred while fetching monthly payments."
+        });
+    }
+};
 export {
     loginAdmin,
     getChatSessions,

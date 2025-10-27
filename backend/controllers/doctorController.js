@@ -121,12 +121,27 @@ const loginDoctor = async (req, res) => {
 const updateDoctorProfile = async (req, res) => {
     try {
         // This assumes you have middleware that adds the doctor's ID to req.doctor.id
-        const docId = req.doctor.id; 
-        
-        // Destructure all fields from the request body
-        const { speciality, degree, experience, about, fees, available, payment } = req.body;
+        const docId = req.doctor.id;
 
-        // Start building the object with fields to update
+        // Destructure all fields from the request body, including the new ones
+        const {
+            speciality,
+            degree,
+            experience,
+            about,
+            fees,
+            available,
+            // New bank details fields
+            accountHolderName,
+            mobileNumber,
+            address,
+            bankName,
+            branchName,
+            accountNo,
+            ifscNo
+        } = req.body;
+
+        // Build the object with fields to update
         const updateFields = {
             speciality,
             degree,
@@ -134,19 +149,16 @@ const updateDoctorProfile = async (req, res) => {
             about,
             fees,
             available,
+            // Add new bank fields to the update object
+            accountHolderName,
+            mobileNumber,
+            address,
+            bankName,
+            branchName,
+            accountNo,
+            ifscNo,
             profileStatus: 'complete' // Mark profile as complete on any successful update
         };
-
-        // If payment data is sent, parse it and add it to the update object
-        if (payment) {
-            try {
-                // Since the data is from FormData, the payment object will be a string
-                updateFields.payment = JSON.parse(payment);
-            } catch (e) {
-                // Handle cases where the payment string is not valid JSON
-                return res.status(400).json({ success: false, message: "Invalid payment data format." });
-            }
-        }
 
         // Handle the image file if it's uploaded
         if (req.file) {
@@ -174,7 +186,6 @@ const updateDoctorProfile = async (req, res) => {
         res.status(500).json({ success: false, message: "An error occurred while updating the profile." });
     }
 }
-
 
 // === All other controller functions remain the same ===
 

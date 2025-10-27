@@ -213,17 +213,18 @@ const DoctorProfile = () => {
                         </div>
                     </div>
 
-                    <div>
-                        <h3 className="text-lg font-semibold text-gray-700 mb-4">Payment Details</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <InfoField label="Account Holder Name" value={profileData.payment?.bankAccount?.accountHolderName} isEdit={isEdit} onChange={(e) => setProfileData(p => ({ ...p, payment: { ...p.payment, bankAccount: { ...p.payment?.bankAccount, accountHolderName: e.target.value } } }))} />
-                            <InfoField label="Account Number" value={profileData.payment?.bankAccount?.accountNumber} isEdit={isEdit} onChange={(e) => setProfileData(p => ({ ...p, payment: { ...p.payment, bankAccount: { ...p.payment?.bankAccount, accountNumber: e.target.value } } }))} />
-                            <InfoField label="IFSC Code" value={profileData.payment?.bankAccount?.ifscCode} isEdit={isEdit} onChange={(e) => setProfileData(p => ({ ...p, payment: { ...p.payment, bankAccount: { ...p.payment?.bankAccount, ifscCode: e.target.value } } }))} />
-                            <InfoField label="Bank Name" value={profileData.payment?.bankAccount?.bankName} isEdit={isEdit} onChange={(e) => setProfileData(p => ({ ...p, payment: { ...p.payment, bankAccount: { ...p.payment?.bankAccount, bankName: e.target.value } } }))} />
-                            <InfoField label="Razorpay Account ID" value={profileData.payment?.razorpay?.accountId} isEdit={isEdit} onChange={(e) => setProfileData(p => ({ ...p, payment: { ...p.payment, razorpay: { ...p.payment?.razorpay, accountId: e.target.value } } }))} />
-                            <InfoField label="Razorpay Key ID" value={profileData.payment?.razorpay?.keyId} isEdit={isEdit} onChange={(e) => setProfileData(p => ({ ...p, payment: { ...p.payment, razorpay: { ...p.payment?.razorpay, keyId: e.target.value } } }))} />
-                        </div>
-                    </div>
+                   <div>
+    <h3 className="text-lg font-semibold text-gray-700 mb-4">Bank Account Details</h3>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <InfoField label="Account holde's Name" value={profileData.accountHolderName} isEdit={isEdit} onChange={(e) => setProfileData(p => ({ ...p, accountHolderName: e.target.value }))} />
+        <InfoField label="Mobile Number" value={profileData.mobileNumber} isEdit={isEdit} onChange={(e) => setProfileData(p => ({ ...p, mobileNumber: e.target.value }))} />
+        <InfoField label="Address" value={profileData.address} isEdit={isEdit} onChange={(e) => setProfileData(p => ({ ...p, address: e.target.value }))} />
+        <InfoField label="Bank name" value={profileData.bankName} isEdit={isEdit} onChange={(e) => setProfileData(p => ({ ...p, bankName: e.target.value }))} />
+        <InfoField label="Branch name" value={profileData.branchName} isEdit={isEdit} onChange={(e) => setProfileData(p => ({ ...p, branchName: e.target.value }))} />
+        <InfoField label="Account No" value={profileData.accountNo} isEdit={isEdit} onChange={(e) => setProfileData(p => ({ ...p, accountNo: e.target.value }))} />
+        <InfoField label="ifsc no" value={profileData.ifscNo} isEdit={isEdit} onChange={(e) => setProfileData(p => ({ ...p, ifscNo: e.target.value }))} />
+    </div>
+</div>
 
                     <div>
                         <h3 className="text-lg font-semibold text-gray-700 mb-2">About</h3>
