@@ -15,13 +15,19 @@ const Navbar = () => {
 
   // --- NEW: Defined navigation links for easier management ---
   const currentOrigin = typeof window !== 'undefined' ? window.location.origin : '';
+  // Use the configured admin URLs from environment variables
+  const adminUrl = import.meta.env.VITE_ADMIN_URL || `${currentOrigin.replace(/\/$/, '')}/admin`;
+  const adminDoctorUrl = import.meta.env.VITE_ADMIN_DOCTOR_URL || `${adminUrl}/admin/doctor/login`;
+
+
+
   const navLinks = [
     { path: '/', label: 'HOME' },
     { path: '/doctors', label: 'DOCTORS' },
     { path: '/about', label: 'ABOUT' },
     { path: '/contact', label: 'CONTACT' },
     {
-      path: `${currentOrigin.replace(/\/$/, '')}/admin`,
+      path: adminDoctorUrl,
       label: 'DOCTORS LOGIN',
       isExternal: true, // Flag for external links
     },
@@ -43,10 +49,16 @@ const Navbar = () => {
         {navLinks.map((link) => (
           <li key={link.label} className="group">
             {link.isExternal ? (
+              // Open admin link in a new tab to avoid the frontend SPA router rendering the admin page
               <a
                 href={link.path}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={(e) => {
+                  // Prevent default to ensure SPA doesn't intercept, then open new tab
+                  e.preventDefault();
+                  window.open(link.path, '_blank', 'noopener,noreferrer');
+                }}
                 className="relative py-1 transition-colors duration-200 text-gray-700 hover:text-teal-600"
               >
                 {link.label}
@@ -109,7 +121,11 @@ const Navbar = () => {
                   href={link.path}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={() => setShowMenu(false)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowMenu(false);
+                    window.open(link.path, '_blank', 'noopener,noreferrer');
+                  }}
                   className='block py-2 px-2 rounded hover:bg-gray-100'
                 >
                   {link.label}

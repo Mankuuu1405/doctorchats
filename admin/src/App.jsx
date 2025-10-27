@@ -43,14 +43,14 @@ const App = () => {
             <ToastContainer position="top-right" autoClose={3000} />
             
             <Routes>
-                {/* Login Page: If not logged in, show Login. If logged in, redirect to the correct dashboard. */}
-                <Route path="/" element={!aToken && !dToken ? <Login /> : (aToken ? <Navigate to="/admin/dashboard" /> : <Navigate to="/doctor/dashboard" />)} />
-                <Route path="/admin/login" element={!aToken ? <Login /> : <Navigate to="/admin/dashboard" />} />
+                {/* Login Pages */}
+                <Route path="/" element={!aToken && !dToken ? <Login /> : (aToken ? <Navigate to="/dashboard" /> : <Navigate to="/doctor/dashboard" />)} />
+                <Route path="/login" element={!aToken ? <Login /> : <Navigate to="/dashboard" />} />
                 <Route path="/doctor/login" element={!dToken ? <Login /> : <Navigate to="/doctor/dashboard" />} />
-                <Route path="/doctor/signup" element={<DoctorSignup />} /> 
+                <Route path="/doctor/signup" element={<DoctorSignup />} />
 
                 {/* --- Admin Portal Routes --- */}
-                <Route path="/admin/*" element={
+                <Route path="/*" element={
                     <AdminProtectedRoute>
                         <div className="flex min-h-screen">
                             <Sidebar />

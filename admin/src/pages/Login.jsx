@@ -18,12 +18,17 @@ const Login = () => {
     const { handleDoctorLogin } = useContext(DoctorContext);
     const { handleAdminLogin } = useContext(AdminContext);
 
-    // Ensure the correct tab is selected when accessing /admin/login or /doctor/login directly
+    // Set the initial state based on the URL path, accounting for the base URL
     React.useEffect(() => {
-        if (location.pathname.startsWith('/admin')) {
-            setState('Admin');
-        } else if (location.pathname.startsWith('/doctor')) {
+        // Remove the base '/admin' from the path for consistent routing
+        const path = location.pathname.replace('/admin', '');
+        console.log('Normalized path:', path);
+        
+        // If normalized path starts with /doctor, it's the doctor login
+        if (path.startsWith('/doctor')) {
             setState('Doctor');
+        } else if (path === '/login' || path === '/') {
+            setState('Admin');
         }
     }, [location.pathname]);
 
@@ -38,7 +43,7 @@ const Login = () => {
                 if (data.success) {
                     handleAdminLogin(data.token);
                     toast.success("Admin login successful!");
-                    navigate('/admin/dashboard');
+                    navigate('/dashboard', { replace: true });
                 } else {
                     toast.error(data.message);
                 }
@@ -55,10 +60,10 @@ const Login = () => {
                     if (data.profileStatus === 'incomplete') {
                         // If the profile is incomplete, redirect to the profile page.
                         toast.info("Please complete your profile to activate your account.");
-                        navigate('/doctor/profile');
+                        navigate('/doctor/profile', { replace: true });
                     } else {
                         // Otherwise, redirect to the dashboard as usual.
-                        navigate('/doctor/dashboard');
+                        navigate('/doctor/dashboard', { replace: true });
                     }
                 } else {
                     toast.error(data.message);
@@ -96,7 +101,7 @@ const Login = () => {
                         : <>
                             Don't have an account? <Link to="/doctor/signup" className='text-teal-600 font-semibold underline cursor-pointer'>Sign Up here</Link>
                             <br />
-{/*                             Are you an Admin? <span onClick={() => setState('Admin')} className='text-teal-600 font-semibold underline cursor-pointer'>Login here</span> */}
+                            Are you an Admin? <span onClick={() => setState('Admin')} className='text-teal-600 font-semibold underline cursor-pointer'>Login here</span>
                           </>
                     }
                 </p>
