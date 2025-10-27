@@ -1,0 +1,46 @@
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+}
+body {
+  top: 0px !important;
+}
+
+/* Hides the "Powered by Google" overlay */
+.goog-logo-link {
+  display: none !important;
+}
+.goog-te-gadget span {
+  display: none !important;
+}
+
+/* Center & style the translate combo box */
+#google_translate_element {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 6px 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.goog-te-combo {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  font-family: 'Inter', sans-serif;
+  color: #1f2937;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.goog-te-combo:hover {
+  border-color: #3b82f6;
+}
+
+.goog-te-combo:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
