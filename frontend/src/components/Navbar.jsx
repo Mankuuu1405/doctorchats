@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { assets } from '../assets/assets';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
+import GoogleTranslate from './GoogleTranslate/GoogleTranslate';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -29,12 +30,12 @@ const Navbar = () => {
     {
       path: adminDoctorUrl,
       label: 'DOCTORS LOGIN',
-      isExternal: true, // Flag for external links
+      isExternal: true, 
     },
      {
       path: '/login',
       label: 'PATIENT LOGIN',
-      isExternal: false, // Flag for external links
+      isExternal: false, 
     }
   ];
 
@@ -42,14 +43,14 @@ const Navbar = () => {
     <div className='flex items-center justify-between px-4 md:px-10 py-4 border-b border-gray-200 shadow-sm bg-white sticky top-0 z-50'>
 
       {/* Logo */}
-      <img onClick={() => navigate('/')} className='w-28 cursor-pointer' src={assets.logo} alt="Logo" />
+      <img onClick={() => navigate('/')} className='w-20 cursor-pointer' src={assets.logo} alt="Logo" />
 
       {/* Desktop Menu - UPDATED */}
       <ul className='hidden md:flex items-center gap-6 font-medium text-gray-700'>
         {navLinks.map((link) => (
           <li key={link.label} className="group">
             {link.isExternal ? (
-              // Open admin link in a new tab to avoid the frontend SPA router rendering the admin page
+              
               <a
                 href={link.path}
                 target="_blank"
@@ -83,6 +84,10 @@ const Navbar = () => {
 
       {/* Right Side */}
       <div className='flex items-center gap-4'>
+         {/* Step 2: Add the GoogleTranslate component for desktop view */}
+        <div className="hidden md:block">
+           <GoogleTranslate />
+        </div>
         {token && userData ? (
           <div className='relative group py-2 -my-2'>
             <div className='flex items-center gap-2 cursor-pointer'>
@@ -113,6 +118,12 @@ const Navbar = () => {
           <img src={assets.logo} className='w-28' alt="logo" />
           <img onClick={() => setShowMenu(false)} src={assets.cross_icon} className='w-6 cursor-pointer' alt="close" />
         </div>
+
+        {/* Step 3: Add the GoogleTranslate component for mobile view */}
+        <div className='mb-6'>
+          <GoogleTranslate />
+        </div>
+        
         <ul className='flex flex-col gap-4 text-lg font-medium text-gray-700'>
           {navLinks.map((link) => (
             <li key={link.label}>

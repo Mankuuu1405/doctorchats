@@ -44,7 +44,7 @@ const Doctors = () => {
     }, [doctors, speciality]);
 
     const handleFilterClick = (newSpeciality) => {
-        // If the clicked speciality is already active, navigate to the general /doctors page to clear the filter.
+       
         if (newSpeciality === speciality) {
             navigate('/doctors');
         } else {
