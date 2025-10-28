@@ -21,13 +21,13 @@ const MobileAppAd = () => {
           </p>
           <div className='mt-6 flex justify-center md:justify-start space-x-4'>
             {/* Placeholder for App Store Button */}
-            <button className='bg-white text-teal-700 text-sm sm:text-base font-medium px-6 py-3 rounded-full transition-all shadow-md hover:bg-gray-100'>
+            <a href='#'><button className='bg-white text-teal-700 text-sm sm:text-base font-medium px-6 py-3 rounded-full transition-all shadow-md hover:bg-gray-100'>
               Download on the App Store
-            </button>
+            </button></a>
             {/* Placeholder for Google Play Button */}
-            <button className='bg-white text-teal-700 text-sm sm:text-base font-medium px-6 py-3 rounded-full transition-all shadow-md hover:bg-gray-100'>
+            <a href='#'><button className='bg-white text-teal-700 text-sm sm:text-base font-medium px-6 py-3 rounded-full transition-all shadow-md hover:bg-gray-100'>
               Get it on Google Play
-            </button>
+            </button></a>
           </div>
         </div>
 

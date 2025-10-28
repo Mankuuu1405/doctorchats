@@ -18,6 +18,7 @@ import MyConsultations from './pages/MyConsultations';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
 import ChatBot from "./components/ChatBot";
+import ScrollToTop from './components/ScrollToTop';
 
 // 👇 Import your new chatbot component
 //import ChatBot from './components/ChatBot/ChatBot';
@@ -36,6 +37,7 @@ const App = () => {
 
   return (
     <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+      <ScrollToTop />
       <ToastContainer 
         position="top-right"
         autoClose={3000}

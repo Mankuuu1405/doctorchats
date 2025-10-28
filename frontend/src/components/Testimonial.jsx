@@ -31,10 +31,10 @@ const TestimonialCard = React.forwardRef(({ testimonial }, ref) => {
 
     return (
         <div ref={ref} className="testimonial-card-container w-[90vw] md:w-[480px] flex-shrink-0 p-4 h-full">
-            <div ref={cardRef} className="relative h-full bg-slate-800/60 backdrop-blur-lg rounded-2xl p-8 flex flex-col border border-slate-700 overflow-hidden">
+            <div ref={cardRef} className="relative h-full bg-teal-100 backdrop-blur-lg rounded-2xl p-8 flex flex-col border border-slate-700 overflow-hidden">
                 <div ref={spotlightRef} className="absolute top-0 left-0 w-30 h-30 bg-[var(--theme-accent)]/20 rounded-full -translate-x-1/2 -translate-y-1/2 blur-2xl scale-0 opacity-0 pointer-events-none" />
                 <Quote className="h-10 w-10 text-[var(--theme-accent)] mb-6 z-10" />
-                <p className="text-slate-300 text-lg italic mb-6 leading-relaxed flex-grow z-10 font-sans">
+                <p className="text-teal-600 text-lg italic mb-6 leading-relaxed flex-grow z-10 font-sans">
                     "{testimonial.quote}"
                 </p>
                 <div className="flex items-center mt-auto pt-6 border-t border-slate-700 z-10">
@@ -44,7 +44,7 @@ const TestimonialCard = React.forwardRef(({ testimonial }, ref) => {
                         className="w-16 h-16 rounded-full object-cover mr-5 border-2 border-[var(--theme-accent)]"
                     />
                     <div>
-                        <p className="font-bold text-white text-lg font-serif">{testimonial.author}</p>
+                        <p className="font-bold text-teal-800 text-lg font-serif">{testimonial.author}</p>
                         <p className="text-sm text-slate-400 font-sans">{testimonial.role}</p>
                     </div>
                 </div>
