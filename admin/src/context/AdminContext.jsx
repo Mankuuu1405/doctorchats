@@ -5,6 +5,8 @@ import { toast } from 'react-toastify';
 export const AdminContext = createContext();
 
 const AdminContextProvider = (props) => {
+
+
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const [aToken, setAToken] = useState(localStorage.getItem('aToken') || '');
     const [doctors, setDoctors] = useState([]);
@@ -22,15 +24,20 @@ const AdminContextProvider = (props) => {
     };
 
     const getAllDoctors = async () => {
-        if (!aToken) return;
-        try {
-            // --- THIS IS THE FIX ---
-            const { data } = await axios.get(`${backendUrl}/api/admin/all-doctors`, { 
-                headers: { Authorization: `Bearer ${aToken}` } 
-            });
-            if (data.success) setDoctors(data.doctors);
-        } catch (error) { toast.error("Failed to load doctors."); }
-    };
+    if (!aToken) return;
+    try {
+        const { data } = await axios.get(`${backendUrl}/api/admin/all-doctors`, { 
+            headers: { Authorization: `Bearer ${aToken}` } 
+        });
+
+        // ADD THIS LOG TO SEE THE EXACT API RESPONSE
+        // console.log("API response for doctors:", data);
+
+        // This line needs to match what you see in the log
+        if (data.success) setDoctors(data.doctors); 
+
+    } catch (error) { toast.error("Failed to load doctors."); }
+};
 
 
     // --- NEW: getAllUsers function ---
@@ -42,7 +49,7 @@ const AdminContextProvider = (props) => {
                 headers: { Authorization: `Bearer ${aToken}` }
             });
             if (data.success) {
-            
+                
                 setUsers(data.Users); // Assuming your API returns { success: true, users: [...] }
             } else {
                 toast.error("Failed to load users.");
@@ -112,28 +119,26 @@ const AdminContextProvider = (props) => {
             toast.error("Failed to remove user.");
         }
     };
-    const settings=async (newPercentage)=>{
+    const settings=async (settingsData)=>{
           try {
-                    const response = await fetch(`${backendUrl}/api/admin/settings`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${aToken}` // Make sure aToken is available
-                        },
-                        body: JSON.stringify({ payoutInterestPercentage: newPercentage })
-                    });
-        
-                    const data = await response.json();
-        
-                    if (data.success) {
-                        toast.success("Interest rate updated successfully!");
-                        getDashData(); // --- CRITICAL: Refresh the dashboard data to show the new value ---
-                    } else {
-                        toast.error(data.message || "Failed to update settings.");
-                    }
-                } catch (error) {
-                    toast.error("An error occurred while saving.");
-                }
+        if (aToken) {
+            // Your API endpoint should be designed to accept this object
+            const response = await axios.put(`${backendUrl}/api/admin/settings`, settingsData, {
+                headers: { token: aToken }
+            });
+
+            if (response.data.success) {
+                // Re-fetch dashboard data to reflect the changes immediately
+                await getDashData();
+                toast.success("Settings updated successfully!");
+            } else {
+                toast.error("Failed to update settings.");
+            }
+        }
+    } catch (error) {
+        console.error("Error updating settings:", error);
+        toast.error("An error occurred while updating settings.");
+    }
     }
 
     useEffect(() => {

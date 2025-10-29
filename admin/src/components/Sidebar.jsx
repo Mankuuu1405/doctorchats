@@ -12,12 +12,12 @@ const Sidebar = () => {
     const role = aToken ? 'admin' : dToken ? 'doctor' : null;
 
     if (!role) {
-        return null; // Don't render a sidebar on the login page
+        return null; // Don't render a sidebar if no user is logged in
     }
 
     // Define the links for each role
     const adminLinks = [
-        { path: '/admin/dashboard', icon: assets.home_icon, label: 'Dashboard' },
+        { path: '/dashboard', icon: assets.home_icon, label: 'Dashboard' },
         // { path: '/admin/consultations', icon: assets.appointment_icon, label: 'Consultations' },
         // { path: '/admin/add-doctor', icon: assets.add_icon, label: 'Add Doctor' },
         { path: '/admin/doctors', icon: assets.people_icon, label: 'Doctors List' },
@@ -46,7 +46,14 @@ const Sidebar = () => {
                                 }`
                             }
                         >
-                            <img className='w-5' src={link.icon} alt={`${link.label} icon`} />
+                            {/* FIX: Wrapper div to prevent icon from shrinking */}
+                            <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
+                                <img 
+                                    className='w-full h-full object-contain' 
+                                    src={link.icon} 
+                                    alt={`${link.label} icon`} 
+                                />
+                            </div>
                             <p className='hidden md:block'>{link.label}</p>
                         </NavLink>
                     </li>

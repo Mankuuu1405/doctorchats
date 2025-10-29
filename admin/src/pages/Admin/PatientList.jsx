@@ -6,6 +6,7 @@ import { FaTrash } from 'react-icons/fa';
 const PatientList = () => {
     const { users, aToken, getAllUsers, toggleUserBlockStatus,removeUser } = useContext(AdminContext);
 
+
     // useEffect(() => {
     //     if (aToken) {
     //         getAllUsers();
@@ -15,7 +16,7 @@ const PatientList = () => {
     const handleToggleBlock = async (userId, currentBlockStatus) => {
         if (toggleUserBlockStatus) {
             await toggleUserBlockStatus(userId, !currentBlockStatus);
-        }
+        }   
     };
      const handleDeleteUser = (userId, userName) => {
         // Show a confirmation dialog before deleting

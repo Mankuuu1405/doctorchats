@@ -60,9 +60,9 @@ const App = () => {
                                     <Route path="dashboard" element={<AdminDashboard />} />
                                     <Route path="consultations" element={<AllConsultations />} />
                                     <Route path="add-doctor" element={<AddDoctor />} />
-                                    <Route path="doctors" element={<DoctorsList />} />
-                                    <Route path="doctor/:id" element={<DoctorProfile />} />
-                                    <Route path='patients' element={<PatientList/>}/>
+                                    <Route path="admin/doctors" element={<DoctorsList />} />
+                                    <Route path="admin/doctor/:id" element={<DoctorProfile />} />
+                                    <Route path='admin/patients' element={<PatientList/>}/>
                                 </Routes>
                             </main>
                         </div>
