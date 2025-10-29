@@ -70,7 +70,6 @@ const Dashboard = () => {
     }
   }, [dashData]);
 
-  console.log(dashData);
 
   if (!dashData) {
     return <div className="flex items-center justify-center h-64"><div>Loading...</div></div>;
@@ -270,11 +269,11 @@ const Dashboard = () => {
             dashData.latestConsultations.map((chat) => (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-center px-6 py-4" key={chat._id}>
                 <div className="flex items-center gap-3 col-span-1">
-                  <img className="rounded-full w-10 h-10 object-cover" src={chat.userId?.image || assets.default_user} alt="Patient" />
+                  <img className="rounded-full w-10 h-10 object-cover" src={chat.userId?.image || assets.patients_icon} alt="Patient" />
                   <div><p className="text-gray-800 font-semibold">{chat.userId?.name}</p></div>
                 </div>
                 <div className="flex items-center gap-3 col-span-1">
-                  <img className="rounded-full w-10 h-10 object-cover" src={chat.doctorId.image || assets.default_doctor} alt="Doctor" />
+                  <img className="rounded-full w-10 h-10 object-cover" src={chat.doctorId.image || assets.doctor_icon} alt="Doctor" />
                   <div><p className="text-gray-800 font-semibold">{chat.doctorId?.name}</p></div>
                 </div>
                 <p className="text-gray-500 text-sm hidden md:block">{new Date(chat.createdAt).toLocaleString()}</p>

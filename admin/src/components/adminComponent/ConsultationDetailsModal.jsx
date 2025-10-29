@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import{ useState, useEffect } from 'react';
 import { assets } from '../../assets/assets.js';
 
 const ConsultationDetailsModal = ({ isOpen, onClose, consultation }) => {
@@ -16,7 +16,6 @@ const ConsultationDetailsModal = ({ isOpen, onClose, consultation }) => {
         _id,
         settings
     } = consultation;
-    console.log(consultation);
 
     // Initialize toggle states with nullish coalescing for safety
     const [isUserBlocked, setIsUserBlocked] = useState(userId?.isBlocked ?? false);
@@ -32,8 +31,6 @@ const ConsultationDetailsModal = ({ isOpen, onClose, consultation }) => {
         setAmountAfterDeduction(Math.max(0, deductedAmount).toFixed(2)); // Ensure not negative, two decimal places
     }, [amount, interestDeduction]);
 
-    // ✅ Toggle User Block/Unblock
-    
     // ✅ Handle Pay Now (Doctor Payout)
     const handlePayNow = async () => {
         if (!doctorId?._id) {
@@ -49,41 +46,7 @@ const ConsultationDetailsModal = ({ isOpen, onClose, consultation }) => {
             return;
         }
 
-        // try {
-           
-        //     const response = await fetch(`http://localhost:4000/api/admin/payouts/process`, {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //             // Include authorization token if required for admin actions
-        //             // 'Authorization': `Bearer ${adminAuthToken}`
-        //         },
-        //         body: JSON.stringify({
-        //             consultationId: _id,
-        //             doctorId: doctorId._id,
-        //             originalAmount: amount,
-        //             interestDeductedPercentage: interestDeduction,
-        //             payoutAmount: amountAfterDeduction,
-        //             // Add any other relevant payout details like adminId, transactionId etc.
-        //         }),
-        //     });
-
-        //     if (!response.ok) {
-        //         const errorData = await response.json();
-        //         alert(`❌ Payout failed: ${errorData.message || 'Server error'}`);
-        //         console.error("❌ Payout failed:", errorData);
-        //     } else {
-        //         const successData = await response.json();
-        //         alert(`✅ Payout of ₹${amountAfterDeduction} successful! Transaction ID: ${successData.transactionId || 'N/A'}`);
-        //         console.log("✅ Payout successful:", successData);
-        //         // Optionally, you might want to refresh the consultation details
-        //         // or close the modal if the payout marks it as complete.
-        //         // onClose(); // Example: Close modal on success
-        //     }
-        // } catch (error) {
-        //     alert("⚠️ Network error during payout. Please try again.");
-        //     console.error("⚠️ Network error during payout:", error);
-        // }
+        
     };
 
     return (
@@ -110,34 +73,14 @@ const ConsultationDetailsModal = ({ isOpen, onClose, consultation }) => {
                             <div className="flex items-center gap-3 mb-3">
                                 <img
                                     className="rounded-full w-12 h-12 object-cover border border-gray-300"
-                                    src={userId?.image || assets.default_user}
+                                    src={userId?.image || assets.doctor_icon}
                                     alt="Patient"
                                 />
                                 <p className="font-semibold text-gray-800">{userId?.name}</p>
                             </div>
                             <p><strong>ID:</strong> {userId?._id}</p>
 
-                            {/* Toggle */}
-                            {/* <div className="mt-4 flex items-center justify-between">
-                                <span className="font-medium">Status: </span>
-                                <label htmlFor={`user-toggle-${userId?._id}`} className="flex items-center cursor-pointer">
-                                    <div className="relative">
-                                        <input
-                                            type="checkbox"
-                                            id={`user-toggle-${userId?._id}`}
-                                            className="sr-only"
-                                            checked={!isUserBlocked}
-                                            onChange={handleToggleUserStatus}
-                                        />
-                                        <div className="block bg-gray-300 w-14 h-8 rounded-full"></div>
-                                        <div
-                                            className={`dot absolute left-1 top-1 w-6 h-6 rounded-full transition-transform duration-300
-                                            ${!isUserBlocked ? 'translate-x-6 bg-green-500' : 'translate-x-0 bg-red-500'}`}
-                                        ></div>
-                                    </div>
-                                    <span className="ml-3 font-medium">{isUserBlocked ? 'Blocked' : 'Active'}</span>
-                                </label>
-                            </div> */}
+                            
                         </div>
 
                         {/* Doctor Info */}
@@ -146,34 +89,14 @@ const ConsultationDetailsModal = ({ isOpen, onClose, consultation }) => {
                             <div className="flex items-center gap-3 mb-3">
                                 <img
                                     className="rounded-full w-12 h-12 object-cover border border-gray-300"
-                                    src={doctorId?.image || assets.default_doctor}
+                                    src={assets.doctor_icon}
                                     alt="Doctor"
                                 />
                                 <p className="font-semibold text-gray-800">{doctorId?.name}</p>
                             </div>
                             <p><strong>ID:</strong> {doctorId?._id}</p>
 
-                            {/* Toggle */}
-                            {/* <div className="mt-4 flex items-center justify-between">
-                                <span className="font-medium">Status: </span>
-                                <label htmlFor={`doctor-toggle-${doctorId?._id}`} className="flex items-center cursor-pointer">
-                                    <div className="relative">
-                                        <input
-                                            type="checkbox"
-                                            id={`doctor-toggle-${doctorId?._id}`}
-                                            className="sr-only"
-                                            checked={!isDoctorBlocked}
-                                            onChange={handleToggleDoctorStatus}
-                                        />
-                                        <div className="block bg-gray-300 w-14 h-8 rounded-full"></div>
-                                        <div
-                                            className={`dot absolute left-1 top-1 w-6 h-6 rounded-full transition-transform duration-300
-                                            ${!isDoctorBlocked ? 'translate-x-6 bg-green-500' : 'translate-x-0 bg-red-500'}`}
-                                        ></div>
-                                    </div>
-                                    <span className="ml-3 font-medium">{isDoctorBlocked ? 'Blocked' : 'Active'}</span>
-                                </label>
-                            </div> */}
+                            
                         </div>
                     </div>
 

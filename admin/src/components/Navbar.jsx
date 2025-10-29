@@ -1,13 +1,13 @@
-import React, { useContext } from 'react'; // <-- THIS IS THE FIX
+import React, { useContext } from 'react';
 import { assets } from '../assets/assets';
 import { DoctorContext } from '../context/DoctorContext';
 import { AdminContext } from '../context/AdminContext';
 import { useNavigate } from 'react-router-dom';
 
-const Navbar = () => {
+// The Navbar now accepts a 'toggleSidebar' prop.
+const Navbar = ({ toggleSidebar }) => {
     const navigate = useNavigate();
 
-    // Now that 'useContext' is imported, these lines will work correctly.
     const { dToken, handleDoctorLogout } = useContext(DoctorContext);
     const { aToken, handleAdminLogout } = useContext(AdminContext);
 
@@ -17,16 +17,29 @@ const Navbar = () => {
         } else if (dToken) {
             handleDoctorLogout();
         }
-        // Redirect to the login page after logging out
         navigate('/');
     };
 
-    // Determine the current role for display
     const currentRole = aToken ? 'Admin' : dToken ? 'Doctor' : null;
 
     return (
         <div className='flex justify-between items-center px-4 sm:px-10 py-3 border-b bg-white shadow-sm'>
             <div className='flex items-center gap-3'>
+                {/* --- Hamburger Menu Icon --- */}
+                {/* This button is only visible on screens smaller than 'md' */}
+                {/* It calls the toggleSidebar function passed down from App.jsx */}
+                {(aToken || dToken) && (
+                     <div className="md:hidden">
+                        <button onClick={toggleSidebar} className="p-2 rounded-md hover:bg-gray-100">
+                            {/* You need to add a menu icon to your assets file */}
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5" />
+</svg>
+
+                        </button>
+                    </div>
+                )}
+               
                 <img 
                     className='w-28' 
                     src={assets.logo} 
