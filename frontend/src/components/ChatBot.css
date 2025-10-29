@@ -1,0 +1,19 @@
+/*
+ * Target the launcher button (the circle) and make it a flex container
+ * to easily center its content.
+ */
+.rcw-launcher {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/*
+ * Target the "open" icon (the thought bubble) and remove the
+ * library's default positioning that pushes it to the right.
+ */
+.rcw-open-launcher {
+  /* This resets the library's "position: absolute" and "right: 18px" styles */
+  position: static !important;
+  width: 55%; /* You can adjust the icon size here if you want */
+}

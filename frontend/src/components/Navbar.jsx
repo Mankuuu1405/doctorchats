@@ -32,12 +32,19 @@ const Navbar = () => {
     { path: "/doctors", label: "DOCTORS" },
     { path: "/about", label: "ABOUT" },
     { path: "/contact", label: "CONTACT" },
+
   ];
 
   // Conditionally add login links based on token. Logout button is handled separately.
   const navLinks = token
-    ? [...baseNavLinks] 
+    ? [
+        // If logged in, show base links and "My Consultations"
+        ...baseNavLinks.slice(0, 2), // Adds HOME and DOCTORS
+        { path: "/my-consultations", label: "My Consultations", isExternal: false },
+        ...baseNavLinks.slice(2), // Adds ABOUT and CONTACT
+      ]
     : [
+        // If logged out, show base links and login options
         ...baseNavLinks,
         { path: adminDoctorUrl, label: "DOCTORS LOGIN", isExternal: true },
         { path: "/login", label: "PATIENT LOGIN", isExternal: false },

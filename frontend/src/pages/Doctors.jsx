@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../context/AppContext';
 import { useNavigate, useParams } from 'react-router-dom';
-
+import doctorImg from '../assets/default_profile.jpg';
+import { assets } from '../assets/assets';
 // List of available specialities for easier management
 const specialityList = [
 "General Physician",
@@ -109,7 +110,7 @@ const Doctors = () => {
                                         <div className='relative'>
                                             <img
                                                 className='w-full h-56 object-cover'
-                                                src={item.image}
+                                                src={item.image||assets.defaultDoctor}
                                                 alt={item.name}
                                             />
                                             <div

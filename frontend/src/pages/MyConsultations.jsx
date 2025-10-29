@@ -4,6 +4,7 @@ import { AppContext } from '../context/AppContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { assets } from '../assets/assets';
+import doctorImg from '../assets/default_profile.jpg';
 
 const MyConsultations = () => {
     // --- THIS IS THE MISSING PIECE ---
@@ -66,7 +67,7 @@ const MyConsultations = () => {
                                 <div className="p-4 md:p-6 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                                     <div className="flex items-start space-x-4">
                                         <img 
-                                            src={chat.doctorId.image || assets.default_doctor} 
+                                            src={chat.doctorId.image || assets.defaultDoctor} 
                                             alt={chat.doctorId.name}
                                             className="w-20 h-20 rounded-lg object-cover"
                                         />

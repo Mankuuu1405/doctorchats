@@ -1,6 +1,12 @@
 import React from "react";
 import { Widget, addResponseMessage } from "react-chat-widget";
+
+// 1. Import the library's CSS first
 import "react-chat-widget/lib/styles.css";
+
+// 2. Import your custom CSS file second
+import "./ChatBot.css";
+
 import axios from "axios";
 
 const ChatBot = () => {
@@ -27,7 +33,7 @@ const ChatBot = () => {
         title="💬 Cywala Chatbot"
         subtitle="Powered by OpenRouter"
         senderPlaceHolder="Type your question..."
-        showCloseButton={true}
+        showCloseButton={true} // It's generally good practice to allow users to close the chat
       />
     </div>
   );
